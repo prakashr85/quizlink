@@ -1,0 +1,33 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body>
+		{% include "../includes/header.html" %}
+		
+		<div>Responses for quiz: <b>{{ quiz.title }}</b></div>
+		<div>Taken on {{ session.timestarted|date:"Y-m-d H:i:s T" }}</div>
+		<br>
+		
+		<table>
+		<tr align="left">
+			<th>Number</th>
+			<th>Question</th>
+			<th>Response</th>
+			<th>Correct?</th>
+		</tr>
+		
+		{% for response in responses %}
+			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+			<td>{{ response.number }}</td>
+			<td>{{ response.question.text|striptags }}</td>
+			<td {% if response.answered and not response.correct %}class="incorrect"{% endif %}>{{ response.text|escape }}</td>
+			<td {% if response.answered and not response.correct %}class="incorrect"{% endif %}>{{ response.correct|yesno:"Yes,No," }}</td>
+			</tr>
+		{% endfor %}
+		
+		</table>
+		<br>
+		<a href="/sessions?quiz={{ quiz.key }}">Back to history</a>
+	</body>
+</html>

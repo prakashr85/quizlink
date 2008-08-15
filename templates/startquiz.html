@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body onLoad="document.takeform.takebutton.focus()">
+		{% include "../includes/header.html" %}
+
+                <div>Quiz: <b>{{ quiz.title }}</b></div>
+                <br>
+                
+		<form action="/take" method="post" name="takeform">
+			<input type="hidden" name="quiz" value="{{ quiz.key }}" />
+                        
+                        <div>Select a quiz mode</div>
+                        <div><input type="radio" name="mode" value="SEQ" checked>Sequential: All questions will be asked once</input></div>
+                        <div><input type="radio" name="mode" value="RET">Retry: All questions will be asked until all are answered correctly</input></div>
+			
+			<br>
+			<div><input name="takebutton" type="submit" value="Take Quiz"></div>
+		</form>
+		
+                {% if incomplete_sessions %}
+                <div>Incomplete sessions for this quiz:</div>
+                        <table>
+                        <tr align="left">
+                                <th>Started</th>
+                                <th>Mode</th>
+                                <th>Answered</th>
+                                <th>Correct</th>
+                                <th>Percentage</th>
+                                <th>Actions</th>
+                        </tr>
+                        
+                        {% for session in incomplete_sessions %}
+                                <tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+                                <td>{{ session.timestarted|date:"Y-m-d H:i:s T" }}</td>
+                                <td>
+                                        {% ifequal session.mode "SEQ" %}Sequential{% endifequal %}
+                                        {% ifequal session.mode "RET" %}Retry{% endifequal %}
+                                </td>
+                                <td>{{ session.questions_answered }}</td>
+                                <td>{{ session.number_correct }}</td>
+                                <td>{{ session.percentage_correct|default_if_none:0|floatformat }}%</td>
+                                <td>
+                                        <a href="/resume?session={{ session.key }}">Resume</a>
+                                        <a href="/delete?session={{ session.key }}">Delete</a>
+                                </td>
+                                </tr>
+                        {% endfor %}
+                        </table>           
+                {% endif %}
+	</body>
+</html>

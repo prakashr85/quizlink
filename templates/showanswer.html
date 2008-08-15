@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body onLoad="document.getElementById('nextbutton').focus();">
+		<div>Question {{ response.number }}</div>
+		<br>
+		<div class="question">{{ response.question.text }}</div>
+		<br>
+		
+		<div>
+		{% if response.correct %}
+			<span style="background-color:Teal;color:White">&nbsp;Correct!&nbsp;</span>
+		{% else %}
+			<span style="background-color:OrangeRed;color:White">&nbsp;Incorrect!&nbsp;</span>
+			<br>
+			Acceptable responses(s):
+			<ul>
+			{% if none_of_the_above %}
+				<li><div><i>None of the above</i></div></li>
+			{% else %}
+				{% for choice in response.question.choices %}
+					{% if choice.correct %}<li><div>{{ choice.text|escape }}</div>{% endif %}
+				{% endfor %}
+			{% endif %}
+			</ul>
+		{% endif %}
+		</div>
+
+		<div>
+		Score: {{ response.session.number_correct }} / {{ response.number }} ({{ response.session.percentage_correct|floatformat }}%)
+		<div>
+		
+		<br>
+		<input id="nextbutton" type="button" value="Next Question" tabindex="0"
+			onclick="window.location='/ask?session={{ response.session.key }}&number={{ response.number|add:1 }}'"></div>
+
+		<br>
+		<hr>
+		{% if comments %}
+			<div>Comments on this question</div>
+			<table>
+			<tr align="left">
+			<th>Date</th>
+			<th>Comment</th>
+			</tr>
+			{% for comment in comments %}
+				<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+				<td>{{ comment.dateadded|date:"Y-m-d H:i:s T" }}</td>
+				<td>{{ comment.text|escape }}</td>
+				</tr>
+			{% endfor %}
+			</table>
+		{% endif %}
+
+		<br>
+		<div>Post a comment:</div>
+		<form name="comment" action="/comment" method="post">
+			<input type="hidden" name="question" value="{{ response.question.key }}" />
+			<input type="hidden" name="session" value="{{ response.session.key }}" />
+			<input type="hidden" name="number" value="{{ response.number }}" />
+			<div><textarea name="comment_text" cols="50" rows="4"></textarea></div>
+			<input type="submit" value="Add Comment / Next Question" />
+		</form>
+	</body>
+</html>

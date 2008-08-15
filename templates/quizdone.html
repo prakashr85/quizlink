@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body>
+		{% include "../includes/header.html" %}
+		
+		<div>Quiz completed!</div>
+		<div><b>{{ quiztitle }}</b></div>
+		<br>
+
+		<table>
+		<tr><td>Questions Answered: </td><td>{{ session.questions_answered }}</td></tr>
+		<tr><td>Correct Responses: </td><td>{{ session.number_correct }}</td></tr>
+		<tr><td>Percentage: </td><td>{{ session.percentage_correct|floatformat }}%</td></tr>
+		</table>
+		
+		<br>
+		<a href="/">Back to quiz list</a>
+
+	</body>
+</html>

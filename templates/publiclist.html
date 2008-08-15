@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body>
+		{% include "../includes/header.html" %}
+	
+		<div><b>Public quizzes</b></div>
+		<table>
+		<tr align="left">
+		<th>Title</th>
+		<th>Questions</th>
+		<th>Taken</th>
+		<th nowrap>Actions</th>
+		</tr>
+		{% for quiz in quizzes %}
+			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+			<td>{{ quiz.title|escape }}</td>
+			<td>{{ quiz.question_count }}</td>
+			<td>{{ quiz.taken_count }} time{% ifnotequal quiz.taken_count 1 %}s{% endifnotequal %}</td>
+			<td>
+				<a href="subscribe?quiz={{ quiz.key }}">Subscribe</a>
+				<a href="questions?quiz={{ quiz.key }}">Questions</a>
+			</td>
+			</tr>
+		{% endfor %}
+		</table>
+		<br>
+
+		<a href="/">Return to main page</a>
+	</body>
+</html>

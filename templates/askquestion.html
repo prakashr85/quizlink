@@ -1,0 +1,38 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body onLoad="document.getElementById('response_text').focus(); document.getElementById('nextbutton').focus();">
+		<div>Question {{ response.number }}</div>
+		<br>
+		<div class="question">{{ response.question.text }}</div>
+		<br>
+
+		<form action="/grade" method="post" name="questionform">
+			{% ifequal response.question.type "FIB" %}
+				<div><input type="text" size="20" name="response_text" id="response_text" /></div>
+			{% endifequal %}
+
+			{% ifequal response.question.type "MCSR" %}
+				<div>Select one:</div>
+				{% for choice in choices %}
+					<div><input type="radio" name="response_text" value="{{ choice.text|escape }}">{{ choice.text|escape }}</input></div>
+				{% endfor %}
+			{% endifequal %}
+
+			{% ifequal response.question.type "MCMR" %}
+				<div>Select all that apply:</div>
+				{% for choice in choices %}
+					<div><input type="checkbox" name="response_text" value="{{ choice.text|escape }}">{{ choice.text|escape }}</input></div>
+				{% endfor %}
+			{% endifequal %}
+			
+			<input type="hidden" name="response_key" value="{{ response.key }}" />
+			<input type="hidden" name="session_key" value="{{ response.session.key }}" />
+			<input type="hidden" name="number" value="{{ response.number }}" />
+
+			<br>
+			<div><input type="submit" value="Submit"></div>
+		</form>
+	</body>
+</html>

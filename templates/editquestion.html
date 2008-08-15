@@ -1,0 +1,71 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body onLoad="document.addchoiceform.choice.focus()">
+		{% include "../includes/header.html" %}
+
+		<form action="/editquestion" method="post" name="editform">
+			<input type="hidden" name="question" value="{{ question.key }}"/>
+			
+			<table>
+			<tr valign="top">
+			<td>
+			<div>Question Text:</div>
+			<div><textarea name="questiontext" cols="50" rows="4">{{ question.text }}</textarea></div>
+			</td>
+			<td>
+			<div>Question Preview:</div>
+			<div class="question">{{ question.text }}</div>			
+			</td>
+			</table>
+
+			<br>
+			<div>Question Type:</div>			
+			<div><input type="radio" name="questiontype" value="FIB" {% ifequal question.type "FIB" %}checked{% endifequal %}>Fill In The Blank</input></div>
+			<div><input type="radio" name="questiontype" value="MCSR" {% ifequal question.type "MCSR" %}checked{% endifequal %}>Multiple Choice Single Response</input></div>
+			<div><input type="radio" name="questiontype" value="MCMR" {% ifequal question.type "MCMR" %}checked{% endifequal %}>Multiple Choice Multiple Responses</input></div>
+			<br>
+			<div><input type="submit" value="Save Changes"></div>
+		</form>
+		
+		<table>
+		<tr align="left">
+		<th>Choice</th>
+		<th>Text</th>
+		<th>Correct?</th>
+		<th>Actions</th>
+		</tr>
+		
+		{% for choice in question.choices %}
+			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+			<td>{{ forloop.counter }}</td>
+			<td>{{ choice.text|escape }}</td>
+			<td>{{ choice.correct }}</td>
+			<td>
+				<a href="/toggle?choice={{ choice.key }}" tabindex="-1">Toggle</a>
+				<a href="/delete?choice={{ choice.key }}" tabindex="-1">Delete</a>
+			</td>
+			</tr>
+		{% endfor %}
+		</table>
+		
+		<form action="/addchoice" method="post" name="addchoiceform">
+			<input type="hidden" name="question" value="{{ question.key }}"/>
+
+			<br>
+			<div>Add Choice:</div>
+			<div>
+				<input type="text" name="choice" size="20">
+				{% ifequal question.type "MCSR" %}<input type="checkbox" name="correct" value="true">Correct?</input>{% endifequal %}
+				{% ifequal question.type "MCMR" %}<input type="checkbox" name="correct" value="true">Correct?</input>{% endifequal %}
+				{% ifequal question.type "FIB" %}<input type="hidden" name="correct" value="true"/>{% endifequal %}
+				<input type="submit" value="Add" tabindex="-1">
+			</div>
+		</form>
+		
+		<div><a href="/addquestion?quiz={{ question.quiz.key }}">Add another question</a></div>
+		<div><a href="/questions?quiz={{ question.quiz.key }}">Back to question list</a></div>
+		
+	</body>
+</html>

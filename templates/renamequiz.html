@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body onLoad="document.rename.title.focus()">
+		{% include "../includes/header.html" %}
+
+		<div>Renaming quiz <b>{{ quiz.title }}</b></div>
+
+		<form action="/rename" method="post" name="rename">
+			<input type="hidden" name="quiz" value="{{ quiz.key }}" />
+			<div>New name: <input type="text" name="title" size="75"></div>
+			<div><input type="submit" value="Rename"></div>
+		</form>
+		
+		<br>
+		<a href="/">Back to quiz list</a>
+	</body>
+</html>
+
+
