@@ -173,11 +173,9 @@ class CopyQuestion(webapp.RequestHandler):
 	def post(self):
 		question = db.get(self.request.get('question'))
 		quiz = db.get(self.request.get('quiz'))
-		if quiz.owner != users.get_current_user():
-			# cannot copy a question into another user's quiz
-			self.redirect('/')
-			return
-		question.copyto(quiz)
+		# cannot copy a question into another user's quiz
+		if quiz.owner == users.get_current_user():
+			question.copyto(quiz)
 		self.redirect('/')
 	
 class RenameQuiz(webapp.RequestHandler):
@@ -189,12 +187,10 @@ class RenameQuiz(webapp.RequestHandler):
 	
 	def post(self):
 		quiz = db.get(self.request.get('quiz'))
-		if quiz.owner != users.get_current_user():
-			# cannot rename another user's quiz
-			self.redirect('/')
-			return
-		quiz.title = self.request.get('title')
-		quiz.put()
+		# cannot rename another user's quiz
+		if quiz.owner == users.get_current_user():
+			quiz.title = self.request.get('title')
+			quiz.put()
 		self.redirect('/')
 	
 class AddComment(webapp.RequestHandler):
