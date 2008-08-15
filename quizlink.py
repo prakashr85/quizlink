@@ -21,9 +21,11 @@ COMMENT_COUNT = 10
 class MainPage(webapp.RequestHandler):
 	def get(self):
 		user = users.get_current_user()
-		owned_quizzes = Quiz.gql('where owner = :1 and deleted = False order by taken_count desc', user).fetch(FETCH_SIZE)
-		subscriptions = Subscription.gql('where user = :1', user).fetch(FETCH_SIZE)
-		subscriptions = [subscription for subscription in subscriptions if not subscription.quiz.deleted and subscription.quiz.public]
+		owned_gql = 'where owner = :1 and deleted = False order by taken_count desc'
+		owned_quizzes = Quiz.gql(owned_gql, user).fetch(FETCH_SIZE)
+		subscriptions_query = Subscription.gql('where user = :1', user)
+		subscriptions = [subscription for subscription in subscriptions_query.fetch(FETCH_SIZE)
+				 if not subscription.quiz.deleted and subscription.quiz.public]
 		latest_comments = Comment.gql('where quizowner = :1 order by dateadded desc', user).fetch(COMMENT_COUNT)
 		
 		template_values = { 
@@ -190,7 +192,7 @@ class RenameQuiz(webapp.RequestHandler):
 		# cannot rename another user's quiz
 		if quiz.owner == users.get_current_user():
 			quiz.title = self.request.get('title')
-			quiz.put()
+		quiz.put()
 		self.redirect('/')
 	
 class AddComment(webapp.RequestHandler):
