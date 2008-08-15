@@ -1,3 +1,6 @@
+# quizlink.py
+# main module. defines request handlers for url endpoints
+
 import sys
 import os
 import wsgiref.handlers
@@ -553,12 +556,10 @@ class DeleteItem(webapp.RequestHandler):
 def main():
 	application = webapp.WSGIApplication(
 		[('/', MainPage),
-		# public operations
 		     ('/publiclist', PublicList), 
 		     ('/publish', PublishQuiz), 
 		     ('/depublish', DepublishQuiz), 
 		     ('/subscribe', SubscribeToQuiz),
-		# core operations
 		     ('/questions', QuestionList), 
 		     ('/addquiz', AddQuiz), 
 		     ('/editquestion', EditQuestion),
@@ -570,14 +571,12 @@ def main():
 		     ('/toggle', ToggleCorrect),
 		     ('/comment', AddComment),
 		     ('/comments', CommentList),
-		# session operations
 		     ('/take', TakeQuiz), 
 		     ('/ask', AskQuestion), 
 		     ('/grade', GradeResponse),
 		     ('/resume', ResumeSession),
 		     ('/sessions', SessionList), 
 		     ('/responses', ResponseList),
-		# delete operations
 		     ('/delete', DeleteItem)
 		     ], 
 		debug=True)

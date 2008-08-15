@@ -1,3 +1,6 @@
+# model.py
+# defines database model objects for quizlink
+
 from google.appengine.ext import db
 
 class Quiz(db.Model):
