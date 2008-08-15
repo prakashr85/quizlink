@@ -1,0 +1,33 @@
+body {
+	font-family: Verdana, Helvetica, sans-serif;
+	background-color: #FFFFFF;
+}
+
+th {
+	color: White;
+	background-color: DarkBlue;
+	padding-right: 10px;
+}
+
+td {
+	padding-right: 10px;
+}
+
+.evenrow {
+	background-color: #F0F0FA;
+}
+
+.incorrect {
+	color: White;
+	background-color: Crimson; 
+}
+
+.question {
+	font-size: large;
+	font-weight: bold
+}
+
+.commentbyowner {
+	color: Black;
+	background-color: Khaki;
+}

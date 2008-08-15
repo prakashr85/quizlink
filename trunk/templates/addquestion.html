@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body onLoad="document.addform.questiontext.focus()">
+		{% include "../includes/header.html" %}
+
+		<form action="/addquestion" method="post" name="addform">
+			<input type="hidden" name="quiz" value="{{ quiz.key }}" />
+			
+			<div>Question Text:</div>
+			<div><textarea name="questiontext" cols="50" rows="4"></textarea></div>
+
+			<br>
+			<div>Question Type:</div>			
+			<div><input type="radio" name="questiontype" value="FIB" checked>Fill In The Blank</input></div>
+			<div><input type="radio" name="questiontype" value="MCSR">Multiple Choice Single Response</input></div>
+			<div><input type="radio" name="questiontype" value="MCMR">Multiple Choice Multiple Responses</input></div>
+		
+			<br>
+			<div><input type="submit" value="Add Choices"></div>
+		</form>
+		
+	</body>
+</html>

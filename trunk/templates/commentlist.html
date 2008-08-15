@@ -1,0 +1,52 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body onLoad="document.commentform.comment_text.focus()">
+		{% include "../includes/header.html" %}
+		
+		<div>Comments on question:</div>
+                <div class="question">{{ question.text }}</div>
+		<br>
+		
+		{% if comments %}
+			<table>
+			<tr align="left">
+			<th>Date</th>
+			<th>Comment</th>
+                        {% if isowner %}<th>Actions</th>{% endif %}
+			</tr>
+			{% for comment in comments %}
+				<tr
+                                    {% if comment.byowner %}
+                                        class="commentbyowner"
+                                    {% else %}
+                                        {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}
+                                    {% endif %}
+                                >
+				<td>{{ comment.dateadded|date:"Y-m-d H:i:s T" }}</td>
+				<td>{{ comment.text|escape }}</td>
+                                {% if isowner %}<td><a href="/delete?comment={{ comment.key }}">Delete</a></td>{% endif %}
+				</tr>
+			{% endfor %}
+			</table>
+		{% else %}
+			<div>There are no comments on this question</div>
+		{% endif %}
+
+                {% if isowner %}
+                    <br>
+                    <div>Post a comment:</div>
+                    <form name="commentform" action="/comment" method="post">
+                            <input type="hidden" name="question" value="{{ question.key }}" />
+                            <div><textarea name="comment_text" cols="50" rows="4"></textarea></div>
+                            <input type="submit" value="Add Comment" />
+                    </form>
+                {% endif %}
+        
+		<br>
+                <div><a href="/editquestion?question={{ question.key }}">Edit this question</a></div>
+		<div><a href="/questions?quiz={{ question.quiz.key }}">Return to question list</a></div>
+		<div><a href="/">Return to main page</a></div>
+	</body>
+</html>

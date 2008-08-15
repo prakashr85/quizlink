@@ -1,0 +1,113 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body>
+		{% include "../includes/header.html" %}
+	
+		<div><b>Subscribed quizzes</b></div>
+		{% if subscriptions %}
+			<table>
+			<tr align="left">
+			<th>Title</th>
+			<th>Questions</th>
+			<th>Actions</th>
+			</tr>
+			{% for subscription in subscriptions %}
+				<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+				<td>{{ subscription.quiz.title|escape }}</td>
+				<td>{{ subscription.quiz.question_count }}</td>
+				<td nowrap>
+					<a href="take?quiz={{ subscription.quiz.key }}">Take</a>
+					<a href="questions?quiz={{ subscription.quiz.key }}">Questions</a>
+					<a href="sessions?quiz={{ subscription.quiz.key }}">History</a>
+					{% if isadmin %}<a href="copy?quiz={{ subscription.quiz.key }}">Copy</a>{% endif %}
+					{% if isadmin %}<a href="delete?quiz={{ subscription.quiz.key }}">Delete</a>{% endif %}
+					<a href="delete?subscription={{ subscription.key }}">Unsubscribe</a>
+				</td>
+				</tr>
+			{% endfor %}
+			</table>
+		{% else %}
+			<div>You have not subscribed to any quizzes</div>
+		{% endif %}
+
+		<br>
+		<div><a href="publiclist">Find a quiz in the public list</a></div>
+		<br>
+
+		<div><b>Your quizzes</b></div>
+		{% if owned_quizzes %}
+			<table>
+			<tr align="left">
+			<th>Title</th>
+			<th>Questions</th>
+			<th>Actions</th>
+			<th>Visibility</th>
+			</tr>
+			{% for quiz in owned_quizzes %}
+				<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+				<td>{{ quiz.title|escape }}</td>
+				<td>{{ quiz.question_count }}</td>
+				<td nowrap>
+					<a href="take?quiz={{ quiz.key }}">Take</a>
+					<a href="questions?quiz={{ quiz.key }}">Questions</a>
+					<a href="sessions?quiz={{ quiz.key }}">History</a>
+					<a href="rename?quiz={{ quiz.key }}">Rename</a>
+					<a href="delete?quiz={{ quiz.key }}">Delete</a>
+					{%if quiz.public %}
+						<a href="depublish?quiz={{ quiz.key }}">Depublish</a>
+					{% else %}
+						<a href="publish?quiz={{ quiz.key }}">Publish</a>				
+					{% endif %}
+				</td>
+				<td>{{ quiz.public|yesno:"Public,Private" }}</td>
+				</tr>
+			{% endfor %}
+			</table>
+		{% else %}
+			<div>You have not created any quizzes</div>
+		{% endif %}
+		<br>
+		
+		<form action="/addquiz" method="post">
+			Create new quiz:
+			<div><input type="text" name="title" size="75"></div>
+			<div><input type="submit" value="Create"></div>
+		</form>
+
+		{% if latest_comments %}	
+			<div><b>Latest comments on your questions</b></div>
+			<table>
+			<tr align="left">
+			<th>Date</th>
+			<th>Quiz</th>
+			<th>Question</th>
+			<th>Comment</th>
+			<th>Actions</th>
+			</tr>
+			{% for comment in latest_comments %}
+				<tr
+				    {% if comment.byowner %}
+					class="commentbyowner"
+				    {% else %}
+					{% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}
+				    {% endif %}
+				>
+				<td>{{ comment.dateadded|date:"Y-m-d H:i:s T" }}</td>
+				<td>{{ comment.question.quiz.title }}</td>
+				<td>{{ comment.question.text|striptags }}</td>
+				<td>{{ comment.text|escape }}</td>
+				<td>
+					<a href="/comments?question={{ comment.question.key }}">Reply</a>
+					<a href="/delete?comment={{ comment.key }}">Delete</a>
+				</td>
+				</tr>
+			{% endfor %}
+			</table>
+			<br>
+		{% endif %}
+		
+		<div>Logged in as <b>{{ user.nickname }}</b> (<a href="{{ logout_url }}">Logout</a>)</div>
+	</body>
+</html>

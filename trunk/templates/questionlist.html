@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body>
+		{% include "../includes/header.html" %}
+		
+		<div>Questions in quiz: <b>{{ quiz.title }}</b></div>
+		<br>
+		{% if isowner %}<div><a href="/addquestion?quiz={{ quiz.key }}">Add question</a></div>{% endif %}
+		
+		<table>
+		<tr align="left">
+		<th>Number</th>
+		<th>Question</th>
+		<th>Type</th>
+		<th>Comments</th>
+		<th>Actions</th>
+		</tr>
+		{% for question in quiz.questions %}
+			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+			<td>{{ forloop.counter }}</td>
+			<td>{{ question.text|striptags }}</td>
+			<td nowrap>
+				{% ifequal question.type "MCSR" %}Multiple Choice Single Response{% endifequal %}
+				{% ifequal question.type "MCMR" %}Multiple Choice Multiple Responses{% endifequal %}
+				{% ifequal question.type "FIB" %}Fill In The Blank{% endifequal %}
+			</td>
+			<td>{{ question.comment_count }}</td>
+			<td nowrap>
+				{% if isowner %}<a href="/editquestion?question={{ question.key }}">Edit</a>{% endif %}
+				<a href="/comments?question={{ question.key }}">Comments</a>
+				<a href="/copyquestion?question={{ question.key }}">Copy</a>
+				{% if isowner %}<a href="/delete?question={{ question.key }}">Delete</a>{% endif %}
+			</td>
+			</tr>
+		{% endfor %}
+		</table>
+
+		{% if isowner %}<div><a href="/addquestion?quiz={{ quiz.key }}">Add question</a></div>{% endif %}
+		<br>
+		<div><a href="/publiclist">Return to public quiz list</a></div>
+		<div><a href="/">Return to main page</a></div>
+	</body>
+</html>

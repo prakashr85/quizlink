@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Komodo Project File - DO NOT EDIT -->
+<project id="4231e2a8-fd89-4ce6-9fce-871b6b3004ca" kpf_version="4" name="quizlink.kpf">
+<file id="195c7ca7-a4af-4fcc-b27e-f6d7e6c7dd30" idref="4231e2a8-fd89-4ce6-9fce-871b6b3004ca" name="quizlink.py" url="quizlink.py">
+</file>
+<preference-set idref="4231e2a8-fd89-4ce6-9fce-871b6b3004ca">
+  <boolean id="import_live">1</boolean>
+</preference-set>
+</project>

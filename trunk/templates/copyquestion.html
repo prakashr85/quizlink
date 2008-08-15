@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body>
+		{% include "../includes/header.html" %}
+
+		<div>Question to copy:</div>
+		<div class="question">{{ question.text }}</div>
+		<br>
+
+		{% if quizzes %}
+			<form action="/copyquestion" method="post" name="addform">
+				<div>Select a quiz to copy to
+				<table>
+				<tr>
+					<th>Title</th>
+					<th>Visibility</th>
+				</tr>
+	
+				{% for quiz in quizzes %}
+					<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+					<td><input type="radio" name="quiz" value="{{ quiz.key }}"> {{ quiz.title|escape }}</input></td>
+					<td>{{ quiz.public|yesno:"Public,Private" }}</td>
+					</tr>
+				{% endfor %}
+				
+				</table>
+				
+				<br>
+				<input type="hidden" name="question" value="{{ question.key }}">
+				<div><input type="submit" value="Copy to quiz"></div>
+			</form>
+		{% else %}
+			<div>You have not created any quizzes, so there is no available quiz to copy this question to</div>
+		{% endif %}
+
+		<br>
+		<div><a href="/publiclist">Return to public quiz list</a></div>
+		<div><a href="/">Return to main page</a></div>
+	</body>
+</html>

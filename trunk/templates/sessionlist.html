@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+	</head>
+	<body>
+		{% include "../includes/header.html" %}
+		
+		<div>History for quiz: <b>{{ quiz.title }}</b></div>
+		<br>
+		
+		<table>
+		<tr align="left">
+			<th>Started</th>
+			<th>Completed</th>
+			<th>Mode</th>
+			<th>Answered</th>
+			<th>Correct</th>
+			<th>Percentage</th>
+			<th>Actions</th>
+		</tr>
+		
+		{% for session in sessions %}
+			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+			<td>{{ session.timestarted|date:"Y-m-d H:i:s T" }}</td>
+			<td>{% if session.timecompleted %}{{ session.timecompleted|date:"Y-m-d H:i:s T" }}{% endif %}</td>
+			<td>
+				{% ifequal session.mode "SEQ" %}Sequential{% endifequal %}
+				{% ifequal session.mode "RET" %}Retry{% endifequal %}
+			</td>
+			<td>{{ session.questions_answered }}</td>
+			<td>{{ session.number_correct }}</td>
+			<td>{{ session.percentage_correct|default_if_none:0|floatformat }}%</td>
+			<td>
+				<a href="/responses?session={{ session.key }}">Responses</a>
+				<a href="/resume?session={{ session.key }}">Resume</a>
+				<a href="/delete?session={{ session.key }}">Delete</a>
+			</td>
+			</tr>
+		{% endfor %}
+		</table>
+		
+		<br>
+		<a href="/">Back to quiz list</a>
+
+	</body>
+</html>

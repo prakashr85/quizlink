@@ -1,0 +1,21 @@
+application: quizlink
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /stylesheets
+  static_dir: stylesheets
+
+- url: /migrate
+  script: admin/migrate.py
+  login: admin
+
+- url: /purge
+  script: admin/purge.py
+  login: admin
+
+- url: /.*
+  script: quizlink.py
+  login: required
+ 
