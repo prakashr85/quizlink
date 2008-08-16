@@ -18,21 +18,41 @@ FETCH_SIZE = 1000
 RESPONSE_BATCH_SIZE = 20
 COMMENT_COUNT = 10
 
-class MainPage(webapp.RequestHandler):
-	def get(self):
-		user = users.get_current_user()
+class QuizProvider():
+	def get_owned_quizzes(self, user):
 		owned_gql = 'where owner = :1 and deleted = False order by taken_count desc'
 		owned_quizzes = Quiz.gql(owned_gql, user).fetch(FETCH_SIZE)
+		return owned_quizzes
+	
+	def get_subscriptions(self, user):
 		subscriptions_query = Subscription.gql('where user = :1', user)
 		subscriptions = [subscription for subscription in subscriptions_query.fetch(FETCH_SIZE)
 				 if not subscription.quiz.deleted and subscription.quiz.public]
+		return subscriptions
+	
+	def get_public_quizzes(self):
+		quizzes = Quiz.gql('where public = True and deleted = False order by taken_count desc').fetch(FETCH_SIZE)
+		return quizzes
+	
+	def get_available_quizzes(self, user):
+		# return the union of owned quizzes and subscribed quizzes
+		owned_quizzes = self.get_owned_quizzes(user)
+		subscribed_quizzes = [s.quiz for s in self.get_subscriptions(user)]
+		union = dict(zip([q.key() for q in owned_quizzes], owned_quizzes))
+		union.update(dict(zip([q.key() for q in subscribed_quizzes], subscribed_quizzes)))
+		return union.values()
+
+class MainPage(webapp.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+		provider = QuizProvider()
 		latest_comments = Comment.gql('where quizowner = :1 order by dateadded desc', user).fetch(COMMENT_COUNT)
 		
 		template_values = { 
 			'user':user, 
 			'isadmin':users.is_current_user_admin(),
-			'subscriptions':subscriptions, 
-			'owned_quizzes':owned_quizzes,
+			'subscriptions':provider.get_subscriptions(user), 
+			'owned_quizzes':provider.get_owned_quizzes(user),
 			'latest_comments':latest_comments,
 			'logout_url':users.create_logout_url('/')
 			}
@@ -163,8 +183,8 @@ class CopyQuestion(webapp.RequestHandler):
 	def get(self):
 		question = db.get(self.request.get('question'))
 		user = users.get_current_user()
-		quizzes = Quiz.gql('where owner = :1 and deleted = False', user).fetch(FETCH_SIZE)
-		quizzes = [quiz for quiz in quizzes if quiz.key() != question.quiz.key()]
+		provider = QuizProvider()
+		quizzes = [quiz for quiz in provider.get_owned_quizzes(user) if quiz.key() != question.quiz.key()]
 		template_values = {
 			'question':question,
 			'quizzes':quizzes
@@ -203,16 +223,13 @@ class AddComment(webapp.RequestHandler):
 		comment.question = question
 		comment.text = self.request.get('comment_text').strip()
 		
-		if not comment.text:
-			self.redirect(self.request.headers['referer'])
-			return
-		
-		comment.user = user
-		comment.quizowner = question.quiz.owner
-		comment.byowner = (user == comment.quizowner)
-		comment.put()
-		question.comment_count += 1
-		question.put()
+		if comment.text:
+			comment.user = user
+			comment.quizowner = question.quiz.owner
+			comment.byowner = (user == comment.quizowner)
+			comment.put()
+			question.comment_count += 1
+			question.put()
 		
 		session_key = self.request.get('session')
 		if session_key:
@@ -237,7 +254,8 @@ class CommentList(webapp.RequestHandler):
 
 class PublicList(webapp.RequestHandler):
 	def get(self):
-		quizzes = Quiz.gql('where public = True and deleted = False order by taken_count desc').fetch(FETCH_SIZE)
+		provider = QuizProvider()
+		quizzes = provider.get_public_quizzes()
 		template_values = { 'quizzes':quizzes }
 		path = os.path.join(os.path.dirname(__file__), 'templates/publiclist.html')
 		self.response.out.write(template.render(path, template_values))
@@ -550,6 +568,18 @@ class DeleteItem(webapp.RequestHandler):
 		if user != choice.question.quiz.owner and not users.is_current_user_admin():
 			return
 		db.delete(choice)
+		
+class AutoquizSetup(webapp.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+		provider = QuizProvider()
+		quizzes = provider.get_available_quizzes(user)
+		template_values = { 'quizzes':quizzes }
+		path = os.path.join(os.path.dirname(__file__), 'templates/autoquiz.html')
+		self.response.out.write(template.render(path, template_values))
+	
+	def post(self):
+		pass
 
 def main():
 	application = webapp.WSGIApplication(
@@ -575,7 +605,8 @@ def main():
 		     ('/resume', ResumeSession),
 		     ('/sessions', SessionList), 
 		     ('/responses', ResponseList),
-		     ('/delete', DeleteItem)
+		     ('/delete', DeleteItem),
+		     ('/autoquiz', AutoquizSetup)
 		     ], 
 		debug=True)
 	wsgiref.handlers.CGIHandler().run(application)
