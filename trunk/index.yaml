@@ -15,21 +15,21 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Unused in query history -- copied from input.
+# Used 4 times in query history.
 - kind: Comment
   properties:
   - name: question
   - name: dateadded
     direction: desc
 
-# Used 6 times in query history.
+# Used 29 times in query history.
 - kind: Comment
   properties:
   - name: quizowner
   - name: dateadded
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 5 times in query history.
 - kind: Question
   properties:
   - name: quiz
@@ -49,7 +49,7 @@ indexes:
   - name: owner
   - name: quiz
 
-# Used 6 times in query history.
+# Used 39 times in query history.
 - kind: Quiz
   properties:
   - name: deleted
@@ -57,7 +57,7 @@ indexes:
   - name: taken_count
     direction: desc
 
-# Used 2 times in query history.
+# Used 6 times in query history.
 - kind: Quiz
   properties:
   - name: deleted
@@ -100,7 +100,7 @@ indexes:
   - name: number
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used 3 times in query history.
 - kind: Retry
   properties:
   - name: session

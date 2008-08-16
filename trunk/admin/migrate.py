@@ -3,15 +3,11 @@ from datetime import datetime
 from google.appengine.ext import webapp
 from google.appengine.ext import db
 from google.appengine.ext.db import GqlQuery
-from quizlink import Quiz
-from quizlink import Question
-from quizlink import Session
-from quizlink import Response
-from quizlink import Comment
+from model import *
 
 class DoMigration(webapp.RequestHandler):
     def get(self):
-        self.update_objects(Question)
+        self.update_objects(Comment)
         return
         
     def update_objects(self, type):
@@ -19,12 +15,18 @@ class DoMigration(webapp.RequestHandler):
         self.response.out.write('Updating %s ...<br>' % (type.__name__,))
         update_count = 0
         for o in objects:
-            if o.comment_count is None:
-                comment_count = Comment.gql('where question = :1', o).count(1000)
-                o.comment_count = comment_count
-                self.response.out.write('%d comments for question %s<br>' % (o.comment_count, o.key()))
-                o.put()
-                update_count += 1
+            question = o.question
+            if question:
+                question_comment = QuestionComment.gql('where question = :1', question).fetch(1000)
+                if not question_comment:
+                    question_comment = QuestionComment()
+                    question_comment.question = question
+                    question_comment.comment = o
+                    question_comment.put()
+                    o.question = None
+                    o.put()
+                    self.response.out.write('Migrated comment %s<br>' % (o.key(), ))
+                    update_count += 1
         self.response.out.write('Updated %d record(s) of type %s<br>' % (update_count, type.__name__))
 
 def main():
