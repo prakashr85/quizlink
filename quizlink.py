@@ -105,8 +105,10 @@ class AddQuestion(webapp.RequestHandler):
 			return
 		question = Question()
 		question.quiz = quiz
-		question.type = self.request.get('questiontype')
 		question.text = self.request.get('questiontext').strip()
+		question.image_url = self.request.get('image_url')
+		question.audio_url = self.request.get('audio_url')
+		question.type = self.request.get('questiontype')
 		question.comment_count = 0
 		question.put()
 		
@@ -129,6 +131,8 @@ class EditQuestion(webapp.RequestHandler):
 			self.redirect('/')
 			return
 		question.text = self.request.get('questiontext').strip()
+		question.image_url = self.request.get('image_url')
+		question.audio_url = self.request.get('audio_url')
 		question.type = self.request.get('questiontype')
 		question.put()
 		self.redirect('/editquestion?question=%s' % (question.key(),))
@@ -312,7 +316,8 @@ class AskQuestion(webapp.RequestHandler):
 		choices = list(question.choices)
 		random.shuffle(choices)
 		template_values = { 
-			'response':response, 
+			'response':response,
+			'question':response.question,
 			'choices':choices
 			}
 		path = os.path.join(os.path.dirname(__file__), 'templates/askquestion.html')
