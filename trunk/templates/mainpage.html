@@ -25,7 +25,6 @@
 					<a href="take?quiz={{ subscription.quiz.key }}">Take</a>
 					<a href="questions?quiz={{ subscription.quiz.key }}">Questions</a>
 					<a href="sessions?quiz={{ subscription.quiz.key }}">History</a>
-					{% if isadmin %}<a href="copy?quiz={{ subscription.quiz.key }}">Copy</a>{% endif %}
 					{% if isadmin %}<a href="delete?quiz={{ subscription.quiz.key }}">Delete</a>{% endif %}
 					<a href="delete?subscription={{ subscription.key }}">Unsubscribe</a>
 				</td>

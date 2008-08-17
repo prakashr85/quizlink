@@ -33,14 +33,6 @@ class QuizProvider():
 	def get_public_quizzes(self):
 		quizzes = Quiz.gql('where public = True and deleted = False order by taken_count desc').fetch(FETCH_SIZE)
 		return quizzes
-	
-	def get_available_quizzes(self, user):
-		# return the union of owned quizzes and subscribed quizzes
-		owned_quizzes = self.get_owned_quizzes(user)
-		subscribed_quizzes = [s.quiz for s in self.get_subscriptions(user)]
-		union = dict(zip([q.key() for q in owned_quizzes], owned_quizzes))
-		union.update(dict(zip([q.key() for q in subscribed_quizzes], subscribed_quizzes)))
-		return union.values()
 
 class MainPage(webapp.RequestHandler):
 	def get(self):
@@ -67,12 +59,18 @@ class AddQuiz(webapp.RequestHandler):
 		if not quiz.title:
 			self.redirect(self.request.headers['referer'])
 			return
-		quiz.owner = users.get_current_user()
+		user = users.get_current_user()
+		quiz.owner = user
 		quiz.public = False
 		quiz.deleted = False
 		quiz.taken_count = 0
 		quiz.question_count = 0
 		quiz.put()
+		
+		selector = AutoquizQuestionSelector()
+		selector.init(quiz, user)
+		selector.put()
+		
 		self.redirect('/questions?quiz=%s' % (quiz.key(),))
 
 class QuestionList(webapp.RequestHandler):
@@ -159,25 +157,6 @@ class ToggleCorrect(webapp.RequestHandler):
 		choice.correct = not choice.correct
 		choice.put()
 		self.redirect(self.request.headers['referer'])
-	
-class CopyQuiz(webapp.RequestHandler):
-	def get(self):
-		if not users.is_current_user_admin():
-			# only admins can copy quizzes (expensive!)
-			self.redirect('/')
-			return
-		quiz = db.get(self.request.get('quiz'))
-		copy = Quiz()
-		copy.title = quiz.title
-		copy.owner = users.get_current_user()
-		copy.public = False
-		copy.deleted = False
-		copy.taken_count = 0
-		copy.question_count = 0
-		copy.put()
-		for question in quiz.questions:
-			question.copyto(copy)
-		self.redirect('/')
 	
 class CopyQuestion(webapp.RequestHandler):
 	def get(self):
@@ -286,6 +265,12 @@ class SubscribeToQuiz(webapp.RequestHandler):
 			subscription.quiz = quiz
 			subscription.user = user
 			subscription.put()
+			
+			selector = AutoquizQuestionSelector.gql('where quiz = :1 and user = :2', quiz, user).get()
+			if not selector:
+				selector = AutoquizQuestionSelector()
+				selector.init(quiz, user)
+				selector.put()
 		self.redirect('/')
 
 class TakeQuiz(webapp.RequestHandler):
@@ -305,37 +290,21 @@ class TakeQuiz(webapp.RequestHandler):
 		user = users.get_current_user()
 		quiz = db.get(self.request.get('quiz'))
 		session = Session()
+		session.init(user)
 		session.quiz = quiz
-		session.number_correct = 0
-		session.percentage_correct = 0.0
-		session.questions_answered = 0
 		session.mode = self.request.get('mode')
-		session.max_question_dateadded = datetime(2000,1,1)
-		session.user = user
-		session.deleted = False
 		session.put()
 		self.redirect('/ask?session=%s&number=%d' % (session.key(), 1))
 		
 			
 class AskQuestion(webapp.RequestHandler):
 	def get(self):
-		session_key = self.request.get('session')
+		session = db.get(self.request.get('session'))
 		number = long(self.request.get('number'))
-		session = db.get(session_key)
-		responseQuery = Response.gql('where session = :1 and number = :2', session, number)
-		
-		response = responseQuery.get()
+		response = self.get_next_response(session, number)
+				
 		if not response:
-			# if there is no response object in the database, grab the next batch
-			self.grab_batch(session, number)
-			response = responseQuery.get()
-			
-		if not response:
-			# there are no more regular responses, so see if there is a retry
-			response = self.grab_retry(session, number)
-		
-		if not response:
-			# if there are still no more responses, we've reached the end of the quiz
+			# if we could not retrieve a response, we've reached the end of the quiz
 			self.session_completed(session)
 			return
 			
@@ -348,6 +317,23 @@ class AskQuestion(webapp.RequestHandler):
 			}
 		path = os.path.join(os.path.dirname(__file__), 'templates/askquestion.html')
 		self.response.out.write(template.render(path, template_values))
+		
+	def get_next_response(self, session, number):
+		if session.mode == "AUTO":
+			# auto mode
+			return None
+		
+		responseQuery = Response.gql('where session = :1 and number = :2', session, number)
+		response = responseQuery.get()
+		if not response:
+			# if there is no response object in the database, grab the next batch
+			self.grab_batch(session, number)
+			response = responseQuery.get()
+		if not response:
+			# there are no more regular responses, so see if there is a retry
+			response = self.grab_retry(session, number)
+		return response
+		
 
 	def grab_batch(self, session, current_number):
 		# prepare responses for each question to be asked
@@ -511,7 +497,7 @@ class DeleteItem(webapp.RequestHandler):
 		if self.request.get('session'):
 			self.marksession_fordeletion(db.get(self.request.get('session')), user)
 		if self.request.get('subscription'):
-			db.delete(db.get(self.request.get('subscription')))
+			self.deletesubscription(db.get(self.request.get('subscription')), user)
 		self.redirect(self.request.headers['referer'])
 	
 	def markquiz_fordeletion(self, quiz, user):
@@ -539,6 +525,13 @@ class DeleteItem(webapp.RequestHandler):
 		for response in session.responses:
 			db.delete(response)
 		db.delete(session)
+		
+	def deletesubscription(self, subscription, user):
+		selector = AutoquizQuestionSelector.gql('where quiz = :1 and user = :2', subscription.quiz, user).get()
+		if selector:
+			selector.enabled = False
+			selector.put()
+		db.delete(subscription)
 		
 	def deletequestion(self, question, user, deleting_quiz=False):
 		if user != question.quiz.owner and not users.is_current_user_admin():
@@ -572,14 +565,24 @@ class DeleteItem(webapp.RequestHandler):
 class AutoquizSetup(webapp.RequestHandler):
 	def get(self):
 		user = users.get_current_user()
-		provider = QuizProvider()
-		quizzes = provider.get_available_quizzes(user)
-		template_values = { 'quizzes':quizzes }
+		selectors = AutoquizQuestionSelector.gql('where user = :1', user).fetch(FETCH_SIZE)
+		template_values = { 'selectors':selectors }
 		path = os.path.join(os.path.dirname(__file__), 'templates/autoquiz.html')
 		self.response.out.write(template.render(path, template_values))
 	
 	def post(self):
-		pass
+		quizzes = list(self.request.get_all('quiz'))
+		user = users.get_current_user()
+		selectors = AutoquizQuestionSelector.gql('where user = :1', user).fetch(FETCH_SIZE)
+		for selector in selectors:
+			selector.enabled = str(selector.quiz.key()) in quizzes
+			selector.put()
+			
+		session = Session()
+		session.init(user)
+		session.mode = "AUTO"
+		session.put()
+		self.redirect('/ask?session=%s&number=1' % (session.key(),))
 
 def main():
 	application = webapp.WSGIApplication(
@@ -593,7 +596,6 @@ def main():
 		     ('/editquestion', EditQuestion),
 		     ('/addquestion', AddQuestion), 
 		     ('/addchoice', AddChoice),
-		     ('/copy', CopyQuiz),
 		     ('/copyquestion', CopyQuestion),
 		     ('/rename', RenameQuiz),
 		     ('/toggle', ToggleCorrect),

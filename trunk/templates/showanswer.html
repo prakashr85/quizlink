@@ -45,7 +45,13 @@
 			<th>Comment</th>
 			</tr>
 			{% for comment in comments %}
-				<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+				<tr
+                                    {% if comment.byowner %}
+                                        class="commentbyowner"
+                                    {% else %}
+                                        {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}
+                                    {% endif %}
+                                >
 				<td>{{ comment.dateadded|date:"Y-m-d H:i:s T" }}</td>
 				<td>{{ comment.text|escape }}</td>
 				</tr>
