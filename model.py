@@ -2,6 +2,9 @@
 # defines database model objects for quizlink
 
 from google.appengine.ext import db
+from datetime import datetime
+
+EPOCH=datetime(1980,1,1)
 
 class Quiz(db.Model):
 	title = db.StringProperty()
@@ -51,6 +54,14 @@ class Session(db.Model):
 	timecompleted = db.DateTimeProperty()
 	mode = db.StringProperty()
 	deleted = db.BooleanProperty()
+	
+	def init(self, user):
+		self.number_correct = 0
+		self.percentage_correct = 0.0
+		self.questions_answered = 0
+		self.max_question_dateadded = EPOCH
+		self.user = user
+		self.deleted = False
 
 class Response(db.Model):
 	session = db.ReferenceProperty(Session, collection_name="responses")
@@ -76,3 +87,15 @@ class Comment(db.Model):
 	dateadded = db.DateTimeProperty(auto_now_add=True)
 	byowner = db.BooleanProperty()
 	quizowner = db.UserProperty()
+
+class AutoquizQuestionSelector(db.Model):
+	user = db.UserProperty()
+	quiz = db.ReferenceProperty(db.Model, collection_name="question_selectors")
+	min_dateadded = db.DateTimeProperty()
+	enabled = db.BooleanProperty()
+	
+	def init(self, quiz, user):
+		self.quiz = quiz
+		self.user = user
+		self.min_dateadded = EPOCH
+		self.enabled = False

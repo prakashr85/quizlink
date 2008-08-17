@@ -7,7 +7,7 @@ from model import *
 
 class DoMigration(webapp.RequestHandler):
     def get(self):
-        self.update_objects(Comment)
+        self.update_objects(Quiz)
         return
         
     def update_objects(self, type):
@@ -15,18 +15,24 @@ class DoMigration(webapp.RequestHandler):
         self.response.out.write('Updating %s ...<br>' % (type.__name__,))
         update_count = 0
         for o in objects:
-            question = o.question
-            if question:
-                question_comment = QuestionComment.gql('where question = :1', question).fetch(1000)
-                if not question_comment:
-                    question_comment = QuestionComment()
-                    question_comment.question = question
-                    question_comment.comment = o
-                    question_comment.put()
-                    o.question = None
-                    o.put()
-                    self.response.out.write('Migrated comment %s<br>' % (o.key(), ))
+            selector = AutoquizQuestionSelector.gql('where quiz = :1 and user = :2', o, o.owner).get()
+            if not selector:
+                selector = AutoquizQuestionSelector()
+                selector.init(o, o.owner)
+                selector.put()
+                self.response.out.write('Added selector for quiz %s (owner=%s)<br>' % (o.key(), o.owner.nickname()))
+                update_count += 1
+            
+            subscriptions = Subscription.gql('where quiz = :1', o).fetch(1000)
+            for subscription in subscriptions:
+                selector = AutoquizQuestionSelector.gql('where quiz = :1 and user = :2', o, subscription.user).get()
+                if not selector:
+                    selector = AutoquizQuestionSelector()
+                    selector.init(o, subscription.user)
+                    selector.put()
+                    self.response.out.write('Added selector for quiz %s (subscription user=%s)<br>' % (o.key(), subscription.user.nickname()))
                     update_count += 1
+
         self.response.out.write('Updated %d record(s) of type %s<br>' % (update_count, type.__name__))
 
 def main():
