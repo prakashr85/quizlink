@@ -1,16 +1,19 @@
-body {
+body, td, th {
 	font-family: Verdana, Helvetica, sans-serif;
+	font-size: small;
+}
+
+body {
 	background-color: #FFFFFF;
+}
+
+td, th {
+	padding-right: 10px;
 }
 
 th {
 	color: White;
 	background-color: DarkBlue;
-	padding-right: 10px;
-}
-
-td {
-	padding-right: 10px;
 }
 
 .evenrow {
