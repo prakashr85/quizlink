@@ -20,6 +20,8 @@ class Question(db.Model):
 	text = db.StringProperty(multiline=True)
 	dateadded = db.DateTimeProperty(auto_now_add=True)
 	comment_count = db.IntegerProperty()
+	image_url = db.StringProperty()
+	audio_url = db.StringProperty()
 	
 	def copyto(self, quiz):
 		question_copy = Question()
@@ -92,7 +94,7 @@ class AutoquizQuestionSelector(db.Model):
 	user = db.UserProperty()
 	quiz = db.ReferenceProperty(db.Model, collection_name="question_selectors")
 	min_dateadded = db.DateTimeProperty()
-	enabled = db.BooleanProperty()
+	enabled = db.BooleanProperty()	
 	
 	def init(self, quiz, user):
 		self.quiz = quiz

@@ -8,8 +8,17 @@
 		<form action="/addquestion" method="post" name="addform">
 			<input type="hidden" name="quiz" value="{{ quiz.key }}" />
 			
+			<table>
+			<tr><td>
 			<div>Question Text:</div>
 			<div><textarea name="questiontext" cols="50" rows="4"></textarea></div>
+			</td></tr>
+			</table>
+
+			<table>
+			<tr><td>Image link:</td><td><input type="text" name="image_url" size="50"/></td></tr>
+			<tr><td>Audio link:</td><td><input type="text" name="audio_url" size="50"/></td></tr>
+			</table>
 
 			<br>
 			<div>Question Type:</div>			

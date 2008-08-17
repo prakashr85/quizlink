@@ -17,8 +17,13 @@
 			</td>
 			<td>
 			<div>Question Preview:</div>
-			<div class="question">{{ question.text }}</div>			
+			{% include "../includes/question.html" %}
 			</td>
+			</table>
+		
+			<table>
+			<tr><td>Image link:</td><td><input type="text" name="image_url" size="50" value="{{ question.image_url }}"/></td></tr>
+			<tr><td>Audio link:</td><td><input type="text" name="audio_url" size="50" value="{{ question.audio_url }}"/></td></tr>
 			</table>
 
 			<br>
