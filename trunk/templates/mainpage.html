@@ -6,7 +6,6 @@
 		{% include "../includes/header.html" %}
 
 		<div><a href="/publiclist">Public Quiz List</a></div>
-		<!--<div><a href="/autoquiz">Auto Quiz</a></div>-->
 		<br>
 	
 		<div><b>Subscribed quizzes</b></div>
@@ -108,6 +107,9 @@
 			</table>
 			<br>
 		{% endif %}
+
+		<div><a href="/autoquiz">Auto Quiz</a></div>
+		<br>
 		
 		<div>Logged in as <b>{{ user.nickname }}</b> (<a href="{{ logout_url }}">Logout</a>)</div>
 	</body>

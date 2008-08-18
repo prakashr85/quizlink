@@ -15,21 +15,41 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 10 times in query history.
+# Used 106 times in query history.
+- kind: AutoquizQuestion
+  properties:
+  - name: quiz
+  - name: user
+  - name: value
+
+# Used 141 times in query history.
+- kind: AutoquizQuestion
+  properties:
+  - name: user
+  - name: value
+
+# Used once in query history.
+- kind: AutoquizQuestion
+  properties:
+  - name: user
+  - name: value
+    direction: desc
+
+# Used 306 times in query history.
 - kind: Comment
   properties:
   - name: question
   - name: dateadded
     direction: desc
 
-# Used 95 times in query history.
+# Used 126 times in query history.
 - kind: Comment
   properties:
   - name: quizowner
   - name: dateadded
     direction: desc
 
-# Used 22 times in query history.
+# Used 335 times in query history.
 - kind: Question
   properties:
   - name: quiz
@@ -49,7 +69,7 @@ indexes:
   - name: owner
   - name: quiz
 
-# Used 116 times in query history.
+# Used 147 times in query history.
 - kind: Quiz
   properties:
   - name: deleted
@@ -57,7 +77,7 @@ indexes:
   - name: taken_count
     direction: desc
 
-# Used 13 times in query history.
+# Used 14 times in query history.
 - kind: Quiz
   properties:
   - name: deleted
@@ -100,13 +120,13 @@ indexes:
   - name: number
     direction: desc
 
-# Used 12 times in query history.
+# Used 14 times in query history.
 - kind: Retry
   properties:
   - name: session
   - name: rand
 
-# Used once in query history.
+# Used 4 times in query history.
 - kind: Session
   properties:
   - name: deleted

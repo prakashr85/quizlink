@@ -56,6 +56,7 @@ class Session(db.Model):
 	timecompleted = db.DateTimeProperty()
 	mode = db.StringProperty()
 	deleted = db.BooleanProperty()
+	autoquiz_value = db.FloatProperty()
 	
 	def init(self, user):
 		self.number_correct = 0
@@ -73,17 +74,23 @@ class Response(db.Model):
 	correct = db.BooleanProperty()
 	answered = db.BooleanProperty()
 	
+	def init(self, session, question, number):
+		self.session = session
+		self.question = question
+		self.number = number
+		self.answered = False
+
 class Retry(db.Model):
 	session = db.ReferenceProperty(Session, collection_name="retries")
 	question = db.ReferenceProperty(Question, collection_name="retries")
 	rand = db.FloatProperty()
 	
 class Subscription(db.Model):
-	quiz = db.ReferenceProperty(db.Model, collection_name="subscriptions")
+	quiz = db.ReferenceProperty(Quiz, collection_name="subscriptions")
 	user = db.UserProperty()
 	
 class Comment(db.Model):
-	question = db.ReferenceProperty(db.Model, collection_name="comments")
+	question = db.ReferenceProperty(Question, collection_name="comments")
 	text = db.StringProperty(multiline=True)
 	user = db.UserProperty()
 	dateadded = db.DateTimeProperty(auto_now_add=True)
@@ -92,12 +99,28 @@ class Comment(db.Model):
 
 class AutoquizQuestionSelector(db.Model):
 	user = db.UserProperty()
-	quiz = db.ReferenceProperty(db.Model, collection_name="question_selectors")
-	min_dateadded = db.DateTimeProperty()
+	quiz = db.ReferenceProperty(Quiz, collection_name="question_selectors")
+	max_dateadded = db.DateTimeProperty()
+	max_value = db.FloatProperty()
 	enabled = db.BooleanProperty()	
 	
 	def init(self, quiz, user):
 		self.quiz = quiz
 		self.user = user
-		self.min_dateadded = EPOCH
+		self.max_dateadded = EPOCH
+		self.max_value = 0.0
 		self.enabled = False
+		
+class AutoquizQuestion(db.Model):
+	user = db.UserProperty()
+	quiz = db.ReferenceProperty(Quiz, collection_name="autoquiz_questions")
+	question = db.ReferenceProperty(Question, collection_name="autoquiz_questions")
+	value = db.FloatProperty()
+	incorrect_bias = db.IntegerProperty()
+	
+	def init(self, question, user):
+		self.question = question
+		self.quiz = question.quiz
+		self.user = user
+		self.value = 0.0
+		self.incorrect_bias = 0
