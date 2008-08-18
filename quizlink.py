@@ -485,22 +485,25 @@ class GradeResponse(webapp.RequestHandler):
 		# selector's max_value (M). The new value will be a random number between
 		# Cmin or Imin and Cmax or Imax, depending on whether the question was answered
 		# correctly (Cmin-Cmax) or incorrectly (Imin-Imax)
-		#               Cmin                                Cmax
-		#               [--- domain for correct response ---]
+		#                    Cmin                             Cmax
+		#                    [-- range for correct response --]
 		# V ------------------------------------------------- M
-		#     [--- domain for incorrect response ---]
-		#     Imin                                  Imax
+		#        [-- range for incorrect response --]
+		#        Imin                               Imax
 		# By design, Cmin > Imin, so incorrect questions have a greater chance of being asked than
 		# correct ones. Also, Imax converges towards Imin the more the question is answered incorrectly.
 		
+		# M - V
 		distance = selector.max_value - autoquizQuestion.value
 
 		if response.correct:
+			# assign Cmin, Cmax
 			if autoquizQuestion.incorrect_bias > 0:
 				autoquizQuestion.incorrect_bias -= 1
-			domain_min = autoquizQuestion.value + 0.30 * distance
+			domain_min = autoquizQuestion.value + 0.50 * distance
 			domain_max = selector.max_value
 		else:
+			# assign Imin, Imax
 			autoquizQuestion.incorrect_bias += 1
 			bias = 0.7 - 0.1 * autoquizQuestion.incorrect_bias
 			domain_min = autoquizQuestion.value + 0.20 * distance
@@ -508,7 +511,7 @@ class GradeResponse(webapp.RequestHandler):
 
 		autoquizQuestion.value = domain_min + random.random() * (domain_max - domain_min)
 
-		# widen the domain a bit for each response
+		# widen the total range a bit for each response
 		selector.max_value += 0.005
 		selector.put()
 			
