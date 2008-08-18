@@ -4,6 +4,7 @@
 		<script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>
 	</head>
 	<body onLoad="document.getElementById('response_text').focus(); document.getElementById('nextbutton').focus();">
+		<div><b>{{ response.question.quiz.title }}</b></div>
 		<div>Question {{ response.number }}</div>
 		<br>
 		{% include "../includes/question.html" %}

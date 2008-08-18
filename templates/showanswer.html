@@ -3,6 +3,7 @@
 		<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
 	</head>
 	<body onLoad="document.getElementById('nextbutton').focus();">
+		<div><b>{{ response.question.quiz.title }}</b></div>
 		<div>Question {{ response.number }}</div>
 		<br>
 		<div class="question">{{ response.question.text }}</div>
@@ -68,5 +69,8 @@
 			<div><textarea name="comment_text" cols="50" rows="4"></textarea></div>
 			<input type="submit" value="Add Comment / Next Question" />
 		</form>
+		
+		<br>
+		<a href="/">Return to main page</a>
 	</body>
 </html>

@@ -12,20 +12,20 @@
 			<table>
 			<tr valign="top">
 			<td>
-			<div>Question Text:</div>
-			<div><textarea name="questiontext" cols="50" rows="4">{{ question.text }}</textarea></div>
+				<div>Question Text:</div>
+				<div><textarea name="questiontext" cols="60" rows="4">{{ question.text }}</textarea></div>
+				<br>
+				<table>
+				<tr><td nowrap>Image link:</td><td><input type="text" name="image_url" size="50" value="{{ question.image_url|default_if_none:"" }}"/></td></tr>
+				<tr><td nowrap>Audio link:</td><td><input type="text" name="audio_url" size="50" value="{{ question.audio_url|default_if_none:"" }}"/></td></tr>
+				</table>
 			</td>
 			<td>
-			<div>Question Preview:</div>
-			{% include "../includes/question.html" %}
+				<div>Question Preview:</div>
+				{% include "../includes/question.html" %}
 			</td>
+			</tr>
 			</table>
-		
-			<table>
-			<tr><td>Image link:</td><td><input type="text" name="image_url" size="50" value="{{ question.image_url }}"/></td></tr>
-			<tr><td>Audio link:</td><td><input type="text" name="audio_url" size="50" value="{{ question.audio_url }}"/></td></tr>
-			</table>
-
 			<br>
 			<div>Question Type:</div>			
 			<div><input type="radio" name="questiontype" value="FIB" {% ifequal question.type "FIB" %}checked{% endifequal %}>Fill In The Blank</input></div>

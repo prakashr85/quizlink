@@ -293,6 +293,7 @@ class TakeQuiz(webapp.RequestHandler):
 	def post(self):
 		user = users.get_current_user()
 		quiz = db.get(self.request.get('quiz'))
+
 		session = Session()
 		session.init(user)
 		session.quiz = quiz
@@ -325,8 +326,7 @@ class AskQuestion(webapp.RequestHandler):
 		
 	def get_next_response(self, session, number):
 		if session.mode == "AUTO":
-			# auto mode
-			return None
+			return self.grab_autoquiz_response(session, number)
 		
 		responseQuery = Response.gql('where session = :1 and number = :2', session, number)
 		response = responseQuery.get()
@@ -348,10 +348,7 @@ class AskQuestion(webapp.RequestHandler):
 		random.shuffle(questions)
 		for question in questions:
 			response = Response()
-			response.session = session
-			response.question = question
-			response.number = number
-			response.answered = False
+			response.init(session, question, number)
 			response.put()
 			number += 1
 			if question.dateadded > session.max_question_dateadded:
@@ -363,10 +360,28 @@ class AskQuestion(webapp.RequestHandler):
 		if not retry:
 			return None
 		response = Response()
-		response.session = session
-		response.question = retry.question
-		response.number = number
-		response.answered = False
+		response.init(session, retry.question, number)
+		response.put()
+		return response
+	
+	def grab_autoquiz_response(self, session, number):
+		user = users.get_current_user()
+		selectors = list(AutoquizQuestionSelector.gql('where user = :1 and enabled = True', user).fetch(FETCH_SIZE))
+		# pick a random test to select a question from
+		random.shuffle(selectors)
+		selector = selectors[0]
+		# the selector keeps track of the max dateadded of all questions that have been answered,
+		# so to select the next question, we will request one that is greater than this max dateadded
+		question = Question.gql('where quiz = :1 and dateadded > :2 order by dateadded', selector.quiz, selector.max_dateadded).get()
+		
+		# if there wasn't a question, we've selected all of the questions from this quiz.
+		# now we can start pulling autoquizQuestions. get the question with the lowest value
+		if not question:
+			autoquizQuestion = AutoquizQuestion.gql('where user = :1 and quiz = :2 order by value', user, selector.quiz).get()
+			question = autoquizQuestion.question
+		
+		response = Response()
+		response.init(session, question, number)
 		response.put()
 		return response
 		
@@ -399,6 +414,7 @@ class GradeResponse(webapp.RequestHandler):
 		if not response.answered:
 			self.grade(response, answers)
 			self.handle_retry(response)
+			self.update_autoquiz(response)
 			response.answered = True
 			response.put()
 			
@@ -447,6 +463,57 @@ class GradeResponse(webapp.RequestHandler):
 			# stick this question at the end
 			retry.rand += question.quiz.question_count + random.random()
 			retry.put()
+			
+	def update_autoquiz(self, response):
+		user = users.get_current_user()
+		question = response.question
+		selector = AutoquizQuestionSelector.gql('where user = :1 and quiz = :2', user, question.quiz).get()
+		if not selector:
+			return
+		
+		if question.dateadded > selector.max_dateadded:
+			# inform the selector that a question with a more recent dateadded has been answered
+			selector.max_dateadded = question.dateadded
+		
+		session = response.session
+		autoquizQuestion = AutoquizQuestion.gql('where user = :1 and question = :2', user, question).get()
+		if not autoquizQuestion:
+			autoquizQuestion = AutoquizQuestion()
+			autoquizQuestion.init(question, user)
+
+		# Compute a new question value between the current value (V) and the
+		# selector's max_value (M). The new value will be a random number between
+		# Cmin or Imin and Cmax or Imax, depending on whether the question was answered
+		# correctly (Cmin-Cmax) or incorrectly (Imin-Imax)
+		#               Cmin                                Cmax
+		#               [--- domain for correct response ---]
+		# V ------------------------------------------------- M
+		#     [--- domain for incorrect response ---]
+		#     Imin                                  Imax
+		# By design, Cmin > Imin, so incorrect questions have a greater chance of being asked than
+		# correct ones. Also, Imax converges towards Imin the more the question is answered incorrectly.
+		
+		distance = selector.max_value - autoquizQuestion.value
+
+		if response.correct:
+			if autoquizQuestion.incorrect_bias > 0:
+				autoquizQuestion.incorrect_bias -= 1
+			domain_min = autoquizQuestion.value + 0.30 * distance
+			domain_max = selector.max_value
+		else:
+			autoquizQuestion.incorrect_bias += 1
+			bias = 0.7 - 0.1 * autoquizQuestion.incorrect_bias
+			domain_min = autoquizQuestion.value + 0.20 * distance
+			domain_max = autoquizQuestion.value + bias * distance
+
+		autoquizQuestion.value = domain_min + random.random() * (domain_max - domain_min)
+
+		# widen the domain a bit for each response
+		selector.max_value += 0.005
+		selector.put()
+			
+		autoquizQuestion.put()
+	
 
 class ResumeSession(webapp.RequestHandler):
 	def get(self):
@@ -524,6 +591,8 @@ class DeleteItem(webapp.RequestHandler):
 			self.deletequestion(question, users.get_current_user(), True)
 		for subscription in quiz.subscriptions:
 			db.delete(subscription)
+		for selector in quiz.question_selectors:
+			db.delete(selector)
 		db.delete(quiz)
 		
 	def deletesession(self, session):
@@ -545,6 +614,8 @@ class DeleteItem(webapp.RequestHandler):
 			self.deletechoice(choice, user)
 		for response in question.responses:
 			db.delete(response)
+		for autoquiz_question in question.autoquiz_questions:
+			db.delete(autoquiz_question)
 		for comment in question.comments:
 			self.deletecomment(comment, user, True)
 		
