@@ -81,9 +81,11 @@ class QuestionList(webapp.RequestHandler):
 			# cannot view the questions of another user's private quiz
 			self.redirect('/')
 			return
+		questions = Question.gql('where quiz = :1 order by dateadded', quiz)
 		template_values = { 
 			'isowner':isowner,
-			'quiz':quiz
+			'quiz':quiz,
+			'questions':questions
 			}
 		path = os.path.join(os.path.dirname(__file__), 'templates/questionlist.html')
 		self.response.out.write(template.render(path, template_values))
@@ -505,7 +507,7 @@ class GradeResponse(webapp.RequestHandler):
 		else:
 			# assign Imin, Imax
 			autoquizQuestion.incorrect_bias += 1
-			bias = 0.7 - 0.1 * autoquizQuestion.incorrect_bias
+			bias = 0.6 - 0.1 * autoquizQuestion.incorrect_bias
 			domain_min = autoquizQuestion.value + 0.20 * distance
 			domain_max = autoquizQuestion.value + bias * distance
 
@@ -621,6 +623,8 @@ class DeleteItem(webapp.RequestHandler):
 			db.delete(autoquiz_question)
 		for comment in question.comments:
 			self.deletecomment(comment, user, True)
+		for retry in question.retries:
+			db.delete(retry)
 		
 		if not deleting_quiz:
 			question.quiz.question_count -= 1

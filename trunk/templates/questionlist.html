@@ -17,7 +17,7 @@
 		<th>Comments</th>
 		<th>Actions</th>
 		</tr>
-		{% for question in quiz.questions %}
+		{% for question in questions %}
 			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
 			<td>{{ forloop.counter }}</td>
 			<td>{{ question.text|striptags }}</td>
