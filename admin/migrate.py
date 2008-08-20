@@ -11,18 +11,7 @@ class DoMigration(webapp.RequestHandler):
         self.add_selectors(Quiz)
         self.remove_maxvalue(Session)
         return
-
-    def update_objects(self, type):
-        objects = type.all().fetch(1000)
-        self.response.out.write('Updating %s ...<br>' % (type.__name__,))
-        update_count = 0
-        for o in objects:
-            if o.value > 1:
-                o.value = random.random()
-                o.put()
-                update_count += 1
-        self.response.out.write('Updated %d record(s) of type %s<br>' % (update_count, type.__name__))
-    
+   
     def add_selectors(self, type):
         objects = type.all().fetch(1000)
         self.response.out.write('Updating %s ...<br>' % (type.__name__,))
@@ -57,6 +46,18 @@ class DoMigration(webapp.RequestHandler):
                 o.put()
                 update_count += 1
         self.response.out.write('Updated %d record(s) of type %s<br>' % (update_count, type.__name__))
+
+    def update_objects(self, type):
+        objects = type.all().fetch(1000)
+        self.response.out.write('Updating %s ...<br>' % (type.__name__,))
+        update_count = 0
+        for o in objects:
+            if o.value > 1:
+                o.value = random.random()
+                o.put()
+                update_count += 1
+        self.response.out.write('Updated %d record(s) of type %s<br>' % (update_count, type.__name__))
+
 
 def main():
     application = webapp.WSGIApplication(

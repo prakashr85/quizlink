@@ -102,7 +102,9 @@ class AutoquizQuestionSelector(db.Model):
 	quiz = db.ReferenceProperty(Quiz, collection_name="question_selectors")
 	max_dateadded = db.DateTimeProperty()
 	max_value = db.FloatProperty()
-	enabled = db.BooleanProperty()	
+	enabled = db.BooleanProperty()
+	correct_count = db.IntegerProperty()
+	incorrect_count = db.IntegerProperty()
 	
 	def init(self, quiz, user):
 		self.quiz = quiz
