@@ -169,7 +169,7 @@ class CopyQuestion(webapp.RequestHandler):
 		question = db.get(self.request.get('question'))
 		user = users.get_current_user()
 		provider = QuizProvider()
-		quizzes = [quiz for quiz in provider.get_owned_quizzes(user) if quiz.key() != question.quiz.key()]
+		quizzes = provider.get_owned_quizzes(user)
 		template_values = {
 			'question':question,
 			'quizzes':quizzes
