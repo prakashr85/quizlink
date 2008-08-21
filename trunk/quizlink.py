@@ -183,7 +183,7 @@ class CopyQuestion(webapp.RequestHandler):
 		# cannot copy a question into another user's quiz
 		if quiz.owner == users.get_current_user():
 			question.copyto(quiz)
-		self.redirect('/')
+		self.redirect('/questions?quiz=%s' % (quiz.key(),))
 	
 class RenameQuiz(webapp.RequestHandler):
 	def get(self):
@@ -368,6 +368,10 @@ class AskQuestion(webapp.RequestHandler):
 	
 	def grab_autoquiz_response(self, session, number):
 		user = users.get_current_user()
+		
+		if number > session.question_limit:
+			return None
+		
 		selectors = list(AutoquizQuestionSelector.gql('where user = :1 and enabled = True', user).fetch(FETCH_SIZE))
 		# pick a random test to select a question from
 		random.shuffle(selectors)
@@ -391,12 +395,16 @@ class AskQuestion(webapp.RequestHandler):
 		session.timecompleted = datetime.now()
 		session.put()
 
-		quiz = session.quiz
-		quiz.taken_count += 1
-		quiz.put()
+		if session.mode == "AUTO":
+			quiztitle = "Auto Quiz"
+		else:
+			quiz = session.quiz
+			quiz.taken_count += 1
+			quiz.put()
+			quiztitle = quiz.title
 
 		template_values = { 
-			'quiztitle':session.quiz.title, 
+			'quiztitle':quiztitle, 
 			'session':session
 			}
 		path = os.path.join(os.path.dirname(__file__), 'templates/quizdone.html')
@@ -432,6 +440,7 @@ class GradeResponse(webapp.RequestHandler):
 		template_values = {
 			'response':response,
 			'comments':comments,
+			'isowner':(response.question.quiz.owner == users.get_current_user()),
 			'none_of_the_above':not answers
 		}
 		path = os.path.join(os.path.dirname(__file__), 'templates/showanswer.html')
@@ -551,9 +560,7 @@ class ResponseList(webapp.RequestHandler):
 	def get(self):
 		session = db.get(self.request.get('session'))
 		responses = Response.gql('where session = :1 order by number', session).fetch(FETCH_SIZE)
-		quiz = session.quiz
 		template_values = { 
-			'quiz':quiz, 
 			'session':session,
 			'responses':responses
 			}
@@ -648,24 +655,35 @@ class DeleteItem(webapp.RequestHandler):
 class AutoquizSetup(webapp.RequestHandler):
 	def get(self):
 		user = users.get_current_user()
-		selectors = AutoquizQuestionSelector.gql('where user = :1', user).fetch(FETCH_SIZE)
-		template_values = { 'selectors':selectors }
+		selectors = self.get_selectors(user)
+		sessions = Session.gql("where user = :1 and mode = 'AUTO' and deleted = False order by timestarted", user).fetch(FETCH_SIZE)
+		
+		template_values = {
+			'selectors':selectors,
+			'sessions':sessions
+			}
 		path = os.path.join(os.path.dirname(__file__), 'templates/autoquiz.html')
 		self.response.out.write(template.render(path, template_values))
 	
 	def post(self):
 		quizzes = list(self.request.get_all('quiz'))
 		user = users.get_current_user()
-		selectors = AutoquizQuestionSelector.gql('where user = :1', user).fetch(FETCH_SIZE)
+		selectors = self.get_selectors(user)
+
 		for selector in selectors:
 			selector.enabled = str(selector.quiz.key()) in quizzes
 			selector.put()
-			
+
 		session = Session()
 		session.init(user)
 		session.mode = "AUTO"
+		session.question_limit = int(self.request.get('question_count'))
 		session.put()
 		self.redirect('/ask?session=%s&number=1' % (session.key(),))
+		
+	def get_selectors(self, user):
+		selectors = AutoquizQuestionSelector.gql('where user = :1', user).fetch(FETCH_SIZE)
+		return selectors
 
 def main():
 	application = webapp.WSGIApplication(

@@ -57,6 +57,7 @@ class Session(db.Model):
 	mode = db.StringProperty()
 	deleted = db.BooleanProperty()
 	autoquiz_value = db.FloatProperty()
+	question_limit = db.IntegerProperty()
 	
 	def init(self, user):
 		self.number_correct = 0
