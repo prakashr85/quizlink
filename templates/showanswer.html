@@ -71,6 +71,7 @@
 		</form>
 		
 		<br>
-		<a href="/">Return to main page</a>
+		{% if isowner %}<div><a href="/editquestion?question={{ response.question.key }}">Edit this question</a></div>{% endif %}
+		<div><a href="/">Return to main page</a></div>
 	</body>
 </html>
