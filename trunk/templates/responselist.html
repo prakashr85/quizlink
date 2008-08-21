@@ -12,6 +12,7 @@
 		<table>
 		<tr align="left">
 			<th>Number</th>
+			{% if not session.quiz %}<th>Quiz</th>{% endif %}
 			<th>Question</th>
 			<th>Response</th>
 			<th>Correct?</th>
@@ -20,6 +21,7 @@
 		{% for response in responses %}
 			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
 			<td>{{ response.number }}</td>
+			{% if not session.quiz %}<td>{{ response.question.quiz.title }}</td>{% endif %}
 			<td>{{ response.question.text|striptags }}</td>
 			<td {% if response.answered and not response.correct %}class="incorrect"{% endif %}>{{ response.text|escape }}</td>
 			<td {% if response.answered and not response.correct %}class="incorrect"{% endif %}>{{ response.correct|yesno:"Yes,No," }}</td>
