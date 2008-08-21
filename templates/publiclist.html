@@ -4,8 +4,11 @@
 	</head>
 	<body>
 		{% include "../includes/header.html" %}
-	
-		<div><b>Public quizzes</b></div>
+		<div><b>Public Quizzes</b></div>
+		<div>This is the public list. These quizzes have been published by other users. You can subscribe to any of these quizzes,
+		which will put it on your main page. Other users will not see your responses or quiz scores.</div>
+		<br>
+		
 		<table>
 		<tr align="left">
 		<th>Title</th>
@@ -19,6 +22,7 @@
 			<td>{{ quiz.question_count }}</td>
 			<td>{{ quiz.taken_count }} time{% ifnotequal quiz.taken_count 1 %}s{% endifnotequal %}</td>
 			<td>
+				<a href="take?quiz={{ quiz.key }}">Take</a>
 				<a href="subscribe?quiz={{ quiz.key }}">Subscribe</a>
 				<a href="questions?quiz={{ quiz.key }}">Questions</a>
 			</td>

@@ -11,10 +11,11 @@
 		
 		<div>
 		{% if response.correct %}
-			<span style="background-color:Teal;color:White">&nbsp;Correct!&nbsp;</span>
+			<span class="correct-text">Correct!</span>
+			<br><br>
 		{% else %}
-			<span style="background-color:OrangeRed;color:White">&nbsp;Incorrect!&nbsp;</span>
-			<br>
+			<span class="incorrect-text">Incorrect!</span>
+			<br><br>
 			Acceptable responses(s):
 			<ul>
 			{% if none_of_the_above %}
@@ -29,7 +30,7 @@
 		</div>
 
 		<div>
-		Score: {{ response.session.number_correct }} / {{ response.number }} ({{ response.session.percentage_correct|floatformat }}%)
+		Score: {{ response.session.number_correct }} out of {{ response.number }} ({{ response.session.percentage_correct|floatformat }}%)
 		<div>
 		
 		<br>
