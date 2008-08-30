@@ -655,7 +655,7 @@ class DeleteItem(webapp.RequestHandler):
 class AutoquizSetup(webapp.RequestHandler):
 	def get(self):
 		user = users.get_current_user()
-		selectors = self.get_selectors(user)
+		selectors = [selector for selector in self.get_selectors(user) if selector.quiz.question_count > 0]
 		sessions = Session.gql("where user = :1 and mode = 'AUTO' and deleted = False order by timestarted", user).fetch(FETCH_SIZE)
 		
 		template_values = {
@@ -670,9 +670,16 @@ class AutoquizSetup(webapp.RequestHandler):
 		user = users.get_current_user()
 		selectors = self.get_selectors(user)
 
+		one_enabled = False
 		for selector in selectors:
 			selector.enabled = str(selector.quiz.key()) in quizzes
+			if selector.enabled:
+				one_enabled = True
 			selector.put()
+
+		if not one_enabled:
+			self.redirect('/autoquiz')
+			return
 
 		session = Session()
 		session.init(user)

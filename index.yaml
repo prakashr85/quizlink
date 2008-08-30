@@ -15,41 +15,41 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 181 times in query history.
+# Used 3 times in query history.
 - kind: AutoquizQuestion
   properties:
   - name: quiz
   - name: user
   - name: value
 
-# Used 141 times in query history.
+# Unused in query history -- copied from input.
 - kind: AutoquizQuestion
   properties:
   - name: user
   - name: value
 
-# Used once in query history.
+# Unused in query history -- copied from input.
 - kind: AutoquizQuestion
   properties:
   - name: user
   - name: value
     direction: desc
 
-# Used 406 times in query history.
+# Used once in query history.
 - kind: Comment
   properties:
   - name: question
   - name: dateadded
     direction: desc
 
-# Used 154 times in query history.
+# Used 11 times in query history.
 - kind: Comment
   properties:
   - name: quizowner
   - name: dateadded
     direction: desc
 
-# Used 418 times in query history.
+# Used 12 times in query history.
 - kind: Question
   properties:
   - name: quiz
@@ -69,7 +69,7 @@ indexes:
   - name: owner
   - name: quiz
 
-# Used 175 times in query history.
+# Used 11 times in query history.
 - kind: Quiz
   properties:
   - name: deleted
@@ -77,7 +77,7 @@ indexes:
   - name: taken_count
     direction: desc
 
-# Used 22 times in query history.
+# Used once in query history.
 - kind: Quiz
   properties:
   - name: deleted
@@ -85,7 +85,7 @@ indexes:
   - name: taken_count
     direction: desc
 
-# Used once in query history.
+# Unused in query history -- copied from input.
 - kind: Response
   properties:
   - name: answered
@@ -107,26 +107,26 @@ indexes:
   - name: number
     direction: desc
 
-# Used 8 times in query history.
+# Unused in query history -- copied from input.
 - kind: Response
   properties:
   - name: session
   - name: number
 
-# Used once in query history.
+# Unused in query history -- copied from input.
 - kind: Response
   properties:
   - name: session
   - name: number
     direction: desc
 
-# Used 16 times in query history.
+# Unused in query history -- copied from input.
 - kind: Retry
   properties:
   - name: session
   - name: rand
 
-# Used 5 times in query history.
+# Used 10 times in query history.
 - kind: Session
   properties:
   - name: deleted
@@ -134,7 +134,7 @@ indexes:
   - name: user
   - name: timestarted
 
-# Used 4 times in query history.
+# Unused in query history -- copied from input.
 - kind: Session
   properties:
   - name: deleted
@@ -143,7 +143,7 @@ indexes:
   - name: timestarted
     direction: desc
 
-# Used 7 times in query history.
+# Unused in query history -- copied from input.
 - kind: Session
   properties:
   - name: deleted
@@ -157,7 +157,7 @@ indexes:
   - name: deleted
     direction: desc
 
-# Used 25 times in query history.
+# Unused in query history -- copied from input.
 - kind: Session
   properties:
   - name: mode
@@ -192,7 +192,7 @@ indexes:
   - name: user
   - name: timestarted
 
-# Used once in query history.
+# Unused in query history -- copied from input.
 - kind: Session
   properties:
   - name: user
