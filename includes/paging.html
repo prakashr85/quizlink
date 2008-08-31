@@ -1,0 +1,3 @@
+{{ first|add:1 }}-{{ last }}</b>
+{% if not atfirst %}<a href="/questions?quiz={{ quiz.key }}&first={{ previous }}"><span class="arrows"><</span>Previous {{ count }}</a>{% endif %}
+{% if not atlast %}<a href="/questions?quiz={{ quiz.key }}&first={{ first|add:count }}">Next {{ count }}<span class="arrows">></span></a>{% endif %}

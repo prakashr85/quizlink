@@ -5,13 +5,13 @@
 	<body>
 		{% include "../includes/header.html" %}
 
-		<div>Question to copy:</div>
+		<div>Question to {{ operation }}:</div>
 		<div class="question">{{ question.text }}</div>
 		<br>
 
 		{% if quizzes %}
-			<form action="/copyquestion" method="post" name="addform">
-				<div>Select a quiz to copy to
+			<form action="/{{ operation }}question" method="post" name="addform">
+				<div>Select a quiz to {{ operation }} to
 				<table>
 				<tr>
 					<th>Title</th>
@@ -29,10 +29,10 @@
 				
 				<br>
 				<input type="hidden" name="question" value="{{ question.key }}">
-				<div><input type="submit" value="Copy to quiz"></div>
+				<div><input type="submit" value="{{ operation|capfirst }} to quiz"></div>
 			</form>
 		{% else %}
-			<div>You have not created any quizzes, so there is no available quiz to copy this question to</div>
+			<div>There is no available quiz to {{ operation }} this question to</div>
 		{% endif %}
 
 		<br>

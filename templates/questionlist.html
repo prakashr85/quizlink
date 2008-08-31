@@ -37,6 +37,7 @@
 					{% if isowner %}<a href="/editquestion?question={{ question.key }}">Edit</a>{% endif %}
 					<a href="/comments?question={{ question.key }}">Comments</a>
 					<a href="/copyquestion?question={{ question.key }}">Copy</a>
+					{% if isowner %}<a href="/movequestion?question={{ question.key }}">Move</a>{% endif %}
 					{% if isowner %}<a href="/delete?question={{ question.key }}">Delete</a>{% endif %}
 				</td>
 				</tr>
