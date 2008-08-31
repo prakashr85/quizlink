@@ -175,9 +175,10 @@ class CopyQuestion(webapp.RequestHandler):
 		quizzes = provider.get_owned_quizzes(user)
 		template_values = {
 			'question':question,
-			'quizzes':quizzes
+			'quizzes':quizzes,
+			'operation':'copy'
 			}
-		path = os.path.join(os.path.dirname(__file__), 'templates/copyquestion.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/selectquizzes.html')
 		self.response.out.write(template.render(path, template_values))
 		
 	def post(self):
@@ -187,6 +188,30 @@ class CopyQuestion(webapp.RequestHandler):
 		if quiz.owner == users.get_current_user():
 			question.copyto(quiz)
 		self.redirect('/questions?quiz=%s' % (quiz.key(),))
+
+class MoveQuestion(webapp.RequestHandler):
+	def get(self):
+		question = db.get(self.request.get('question'))
+		user = users.get_current_user()
+		provider = QuizProvider()
+		quizzes = [quiz for quiz in provider.get_owned_quizzes(user) if quiz.key() != question.quiz.key()]
+		template_values = {
+			'question':question,
+			'quizzes':quizzes,
+			'operation':'move'
+			}
+		path = os.path.join(os.path.dirname(__file__), 'templates/selectquizzes.html')
+		self.response.out.write(template.render(path, template_values))
+		
+	def post(self):
+		question = db.get(self.request.get('question'))
+		quiz = db.get(self.request.get('quiz'))
+		# cannot move a question from another user's quiz
+		# cannot move a question into another user's quiz
+		if question.quiz.owner == users.get_current_user() and quiz.owner == users.get_current_user():
+			question.moveto(quiz)
+		self.redirect('/questions?quiz=%s' % (question.quiz.key(),))
+	
 	
 class RenameQuiz(webapp.RequestHandler):
 	def get(self):
@@ -715,6 +740,7 @@ def main():
 		     ('/addquestion', AddQuestion), 
 		     ('/addchoice', AddChoice),
 		     ('/copyquestion', CopyQuestion),
+		     ('/movequestion', MoveQuestion),
 		     ('/rename', RenameQuiz),
 		     ('/toggle', ToggleCorrect),
 		     ('/comment', AddComment),

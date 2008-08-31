@@ -1,0 +1,8 @@
+<div class="question">
+    {{ question.text }}
+    {% if question.audio_url %}<a href="{{ question.audio_url }}"></a>{% endif %}
+</div>
+<br>
+{% if question.image_url %}
+    <div><img src="{{ question.image_url }}"></div>
+{% endif %}

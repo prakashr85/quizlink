@@ -22,6 +22,15 @@ class Question(db.Model):
 	comment_count = db.IntegerProperty()
 	image_url = db.StringProperty()
 	audio_url = db.StringProperty()
+        
+        def moveto(self, quiz):
+                old_quiz = self.quiz
+                self.quiz = quiz
+                self.put()
+                quiz.question_count += 1
+                quiz.put()
+                old_quiz.question_count -= 1
+                old_quiz.put()
 	
 	def copyto(self, quiz):
 		question_copy = Question()
