@@ -17,6 +17,7 @@ from model import *
 FETCH_SIZE = 1000
 RESPONSE_BATCH_SIZE = 20
 COMMENT_COUNT = 10
+PAGE_LIMIT = 50
 
 class QuizProvider():
 	def get_owned_quizzes(self, user):
@@ -76,17 +77,19 @@ class AddQuiz(webapp.RequestHandler):
 class QuestionList(webapp.RequestHandler):
 	def get(self):
 		quiz = db.get(self.request.get('quiz'))
+		first = get_positive_number(self.request.get('first'))
 		isowner = quiz.owner == users.get_current_user()
 		if not isowner and not quiz.public:
 			# cannot view the questions of another user's private quiz
 			self.redirect('/')
 			return
-		questions = Question.gql('where quiz = :1 order by dateadded', quiz)
+		questions = Question.gql('where quiz = :1 order by dateadded', quiz).fetch(PAGE_LIMIT, first)
 		template_values = { 
 			'isowner':isowner,
 			'quiz':quiz,
 			'questions':questions
 			}
+		template_values.update(paging_dictionary(first, questions, quiz.question_count))
 		path = os.path.join(os.path.dirname(__file__), 'templates/questionlist.html')
 		self.response.out.write(template.render(path, template_values))
 
@@ -548,22 +551,29 @@ class SessionList(webapp.RequestHandler):
 	def get(self):
 		user = users.get_current_user()
 		quiz = db.get(self.request.get('quiz'))
-		sessions = Session.gql('where quiz = :1 and user = :2 and deleted = False order by timestarted', quiz, user).fetch(FETCH_SIZE)
+		first = get_positive_number(self.request.get('first'))
+		sessions = Session.gql('where quiz = :1 and user = :2 and deleted = False order by timestarted', quiz, user).fetch(PAGE_LIMIT, first)
+		session_count = Session.gql('where quiz = :1 and user = :2 and deleted = False', quiz, user).count()
+		
 		template_values = {
 			'quiz':quiz, 
 			'sessions':sessions 
 			}
+		template_values.update(paging_dictionary(first, sessions, session_count))
 		path = os.path.join(os.path.dirname(__file__), 'templates/sessionlist.html')
 		self.response.out.write(template.render(path, template_values))
 		
 class ResponseList(webapp.RequestHandler):
 	def get(self):
 		session = db.get(self.request.get('session'))
-		responses = Response.gql('where session = :1 order by number', session).fetch(FETCH_SIZE)
+		first = get_positive_number(self.request.get('first'))
+		responses = Response.gql('where session = :1 order by number', session).fetch(PAGE_LIMIT, first)
+		total_responses = Response.gql('where session = :1', session).count()
 		template_values = { 
 			'session':session,
 			'responses':responses
 			}
+		template_values.update(paging_dictionary(first, responses, total_responses))
 		path = os.path.join(os.path.dirname(__file__), 'templates/responselist.html')
 		self.response.out.write(template.render(path, template_values))
 
@@ -720,6 +730,24 @@ def main():
 		     ], 
 		debug=True)
 	wsgiref.handlers.CGIHandler().run(application)
+
+def get_positive_number(value):
+	if not value:
+		return 0
+	number = int(value)
+	if number < 0:
+		return 0
+	return number
+
+def paging_dictionary(first, batch, total_count):
+	return {
+		'atfirst':first <= 0,
+		'atlast':first + len(batch) >= total_count,
+		'first':first,
+		'last':first + len(batch),
+		'previous':first - PAGE_LIMIT,
+		'count':PAGE_LIMIT
+		}
 
 if __name__ == "__main__":
 	main()

@@ -5,9 +5,16 @@
 	<body>
 		{% include "../includes/header.html" %}
 		
-		<div>History for quiz: <b>{{ quiz.title }}</b></div>
+		<div>Quiz: <b>{{ quiz.title }}</b></div>
 		<br>
-		
+			
+		{% if not sessions %}
+			<div>This quiz has not been taken yet</div>
+		{% else %}
+		<div><b>Sessions {{ first|add:1 }}-{{ last }}</b>
+		{% if not atfirst %}<a href="/sessions?quiz={{ quiz.key }}&first={{ previous }}"><span class="arrows"><</span>Previous {{ count }}</a>{% endif %}
+		{% if not atlast %}<a href="/sessions?quiz={{ quiz.key }}&first={{ first|add:count }}">Next {{ count }}<span class="arrows">></span></a>{% endif %}
+		</div>
 		<table>
 		<tr align="left">
 			<th>Started</th>
@@ -37,7 +44,14 @@
 			</td>
 			</tr>
 		{% endfor %}
+		<tr><td colspan="7" align="right">
+		<div><b>Sessions {{ first|add:1 }}-{{ last }}</b>
+		{% if not atfirst %}<a href="/sessions?quiz={{ quiz.key }}&first={{ previous }}"><span class="arrows"><</span>Previous {{ count }}</a>{% endif %}
+		{% if not atlast %}<a href="/sessions?quiz={{ quiz.key }}&first={{ first|add:count }}">Next {{ count }}<span class="arrows">></span></a>{% endif %}
+		</div>
+		</td></tr>
 		</table>
+		{% endif %}
 		
 		<br>
 		<a href="/">Return to main page</a>
