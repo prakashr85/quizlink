@@ -5,10 +5,14 @@
 	<body>
 		{% include "../includes/header.html" %}
 		
-		<div>Responses {% if session.quiz %}for quiz: <b>{{ session.quiz.title }}</b>{% endif %}</div>
+		<div>{% if session.quiz %}Quiz: <b>{{ session.quiz.title }}</b>{% endif %}</div>
 		<div>Taken on {{ session.timestarted|date:"Y-m-d H:i:s T" }}</div>
 		<br>
 		
+		<div><b>Responses {{ first|add:1 }}-{{ last }}</b>
+		{% if not atfirst %}<a href="/responses?session={{ session.key }}&first={{ previous }}"><span class="arrows"><</span>Previous {{ count }}</a>{% endif %}
+		{% if not atlast %}<a href="/responses?session={{ session.key }}&first={{ first|add:count }}">Next {{ count }}<span class="arrows">></span></a>{% endif %}
+		</div>
 		<table>
 		<tr align="left">
 			<th>Number</th>
@@ -27,7 +31,12 @@
 			<td {% if response.answered and not response.correct %}class="incorrect"{% endif %}>{{ response.correct|yesno:"Yes,No," }}</td>
 			</tr>
 		{% endfor %}
-		
+		<tr><td colspan="5" align="right">
+		<div><b>Responses {{ first|add:1 }}-{{ last }}</b>
+		{% if not atfirst %}<a href="/responses?session={{ session.key }}&first={{ previous }}"><span class="arrows"><</span>Previous {{ count }}</a>{% endif %}
+		{% if not atlast %}<a href="/responses?session={{ session.key }}&first={{ first|add:count }}">Next {{ count }}<span class="arrows">></span></a>{% endif %}
+		</div>
+		</td></tr>
 		</table>
 		<br>
 		{% if session.quiz %}<div><a href="/sessions?quiz={{ session.quiz.key }}">Return to quiz history</a></div>{% endif %}
