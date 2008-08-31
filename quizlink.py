@@ -205,12 +205,13 @@ class MoveQuestion(webapp.RequestHandler):
 		
 	def post(self):
 		question = db.get(self.request.get('question'))
+		original_quiz = question.quiz
 		quiz = db.get(self.request.get('quiz'))
 		# cannot move a question from another user's quiz
 		# cannot move a question into another user's quiz
 		if question.quiz.owner == users.get_current_user() and quiz.owner == users.get_current_user():
 			question.moveto(quiz)
-		self.redirect('/questions?quiz=%s' % (question.quiz.key(),))
+		self.redirect('/questions?quiz=%s' % (original_quiz.key(),))
 	
 	
 class RenameQuiz(webapp.RequestHandler):
