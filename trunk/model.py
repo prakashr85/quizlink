@@ -39,6 +39,8 @@ class Question(db.Model):
 		question_copy.text = self.text
 		question_copy.deleted = False
                 question_copy.comment_count = 0
+                question_copy.image_url = self.image_url
+                question_copy.audio_url = self.audio_url
 		question_copy.put()
 		for choice in self.choices:
 			choice_copy = Choice()

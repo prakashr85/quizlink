@@ -42,14 +42,14 @@ indexes:
   - name: dateadded
     direction: desc
 
-# Used 26 times in query history.
+# Used 28 times in query history.
 - kind: Comment
   properties:
   - name: quizowner
   - name: dateadded
     direction: desc
 
-# Used 208 times in query history.
+# Used 222 times in query history.
 - kind: Question
   properties:
   - name: quiz
@@ -69,7 +69,7 @@ indexes:
   - name: owner
   - name: quiz
 
-# Used 34 times in query history.
+# Used 44 times in query history.
 - kind: Quiz
   properties:
   - name: deleted
@@ -107,7 +107,7 @@ indexes:
   - name: number
     direction: desc
 
-# Used 11 times in query history.
+# Used 13 times in query history.
 - kind: Response
   properties:
   - name: session
@@ -134,7 +134,7 @@ indexes:
   - name: user
   - name: timestarted
 
-# Unused in query history -- copied from input.
+# Used once in query history.
 - kind: Session
   properties:
   - name: deleted
@@ -150,6 +150,15 @@ indexes:
   - name: quiz
   - name: user
   - name: timestarted
+
+# Used 2 times in query history.
+- kind: Session
+  properties:
+  - name: deleted
+  - name: quiz
+  - name: user
+  - name: timestarted
+    direction: desc
 
 # Unused in query history -- copied from input.
 - kind: Session

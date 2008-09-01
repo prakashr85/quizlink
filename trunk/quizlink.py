@@ -578,7 +578,7 @@ class SessionList(webapp.RequestHandler):
 		user = users.get_current_user()
 		quiz = db.get(self.request.get('quiz'))
 		first = get_positive_number(self.request.get('first'))
-		sessions = Session.gql('where quiz = :1 and user = :2 and deleted = False order by timestarted', quiz, user).fetch(PAGE_LIMIT, first)
+		sessions = Session.gql('where quiz = :1 and user = :2 and deleted = False order by timestarted desc', quiz, user).fetch(PAGE_LIMIT, first)
 		session_count = Session.gql('where quiz = :1 and user = :2 and deleted = False', quiz, user).count()
 		
 		template_values = {
@@ -692,7 +692,7 @@ class AutoquizSetup(webapp.RequestHandler):
 	def get(self):
 		user = users.get_current_user()
 		selectors = [selector for selector in self.get_selectors(user) if selector.quiz.question_count > 0]
-		sessions = Session.gql("where user = :1 and mode = 'AUTO' and deleted = False order by timestarted", user).fetch(FETCH_SIZE)
+		sessions = Session.gql("where user = :1 and mode = 'AUTO' and deleted = False order by timestarted desc", user).fetch(FETCH_SIZE)
 		
 		template_values = {
 			'selectors':selectors,
