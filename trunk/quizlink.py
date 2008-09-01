@@ -15,7 +15,7 @@ from google.appengine.ext.db import GqlQuery
 from model import *
 
 FETCH_SIZE = 1000
-RESPONSE_BATCH_SIZE = 20
+RESPONSE_BATCH_SIZE = 50
 COMMENT_COUNT = 10
 PAGE_LIMIT = 50
 
