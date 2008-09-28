@@ -1,6 +1,5 @@
-body, td, th {
-	font-family: Verdana, Helvetica, sans-serif;
-	font-size: small;
+body, td, th, input {
+	font-family: Helvetica, sans-serif;
 }
 
 body {
@@ -22,31 +21,37 @@ th {
 
 .correct-text {
 	background-color:GreenYellow;
-	color:Black;
+	font-weight: bold;
 	font-size: x-large;
-	padding-right: 10px;
-	padding-left: 10px;
+	color:Black;
+	padding-top: 3px;
 	padding-bottom: 3px;
+	padding-left: 10px;
+	padding-right: 10px;
 	border: 1px solid Green;
 }
 
 .incorrect-text {
 	background-color:OrangeRed;
-	color:White;
 	font-size: x-large;
-	padding-right: 10px;
-	padding-left: 10px;
+	font-weight: bold;
+	color:White;
+	padding-top: 3px;
 	padding-bottom: 3px;
+	padding-left: 10px;
+	padding-right: 10px;
 	border: 1px solid DarkRed;
 }
 
 .incorrect {
 	color: White;
-	background-color: Crimson; 
+	background-color: Crimson;
 }
 
 .question {
-	font-size: large;
+	border:1px solid darkblue;
+	background-color: beige;
+	padding:5px;
 	font-weight: bold
 }
 
@@ -56,5 +61,5 @@ th {
 }
 
 .arrows {
-	font-size: xx-small;
+	font-size: small;
 }
