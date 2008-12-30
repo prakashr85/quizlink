@@ -8,8 +8,9 @@ from model import *
 
 class DoMigration(webapp.RequestHandler):
     def get(self):
-        self.add_selectors(Quiz)
-        self.remove_maxvalue(Session)
+        #self.add_selectors(Quiz)
+        #self.remove_maxvalue(Session)
+        self.fix_questioncount()
         return
    
     def add_selectors(self, type):
@@ -46,6 +47,17 @@ class DoMigration(webapp.RequestHandler):
                 o.put()
                 update_count += 1
         self.response.out.write('Updated %d record(s) of type %s<br>' % (update_count, type.__name__))
+        
+    def fix_questioncount(self):
+        quizzes = Quiz.all().fetch(1000)
+        update_count = 0
+        for quiz in quizzes:
+            count = Question.gql('where quiz = :1', quiz).count()
+            self.response.out.write('Updating quiz %s count from %d to %d<br>' % (quiz.title, quiz.question_count, count))
+            quiz.question_count = count
+            quiz.put()
+            update_count += 1
+        self.response.out.write('Updated %d quizzes' % (update_count,))
 
     def update_objects(self, type):
         objects = type.all().fetch(1000)
