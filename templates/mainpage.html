@@ -44,6 +44,7 @@
 		{% if owned_quizzes %}
 			<table>
 			<tr align="left">
+			<th>Category</th>
 			<th>Title</th>
 			<th>Questions</th>
 			<th>Actions</th>
@@ -51,6 +52,12 @@
 			</tr>
 			{% for quiz in owned_quizzes %}
 				<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+				<td>{% if quiz.category %}
+					<a href="categorize?quiz={{ quiz.key }}">{{ quiz.category.title }}</a>
+				    {% else %}
+					<a href="categorize?quiz={{ quiz.key }}">Undefined</a>
+				    {% endif %}
+				</td>
 				<td>{{ quiz.title|escape }}</td>
 				<td>{{ quiz.question_count }}</td>
 				<td nowrap>
@@ -102,7 +109,7 @@
 				<td>{{ comment.question.quiz.title }}</td>
 				<td>{{ comment.question.text|striptags }}</td>
 				<td>{{ comment.text|escape }}</td>
-				<td>
+				<td nowrap>
 					<a href="/comments?question={{ comment.question.key }}">Reply</a>
 					<a href="/delete?comment={{ comment.key }}">Delete</a>
 				</td>

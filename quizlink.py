@@ -228,6 +228,45 @@ class RenameQuiz(webapp.RequestHandler):
 			quiz.title = self.request.get('title')
 		quiz.put()
 		self.redirect('/')
+
+class Categorize(webapp.RequestHandler):
+	def get(self):
+		quiz = db.get(self.request.get('quiz'))
+		categories = Category.gql('where top_level = True').fetch(FETCH_SIZE)
+		
+		
+		template_values = { 'quiz':quiz, 'categories':categories }
+		path = os.path.join(os.path.dirname(__file__), 'templates/categorize.html')
+		self.response.out.write(template.render(path, template_values))
+		
+	def post(self):
+		quiz = db.get(self.request.get('quiz'))
+		category = db.get(self.request.get('category'))
+		if quiz.owner == users.get_current_user() or users.is_current_user_admin():
+			quiz.category = category
+			quiz.put()
+		self.redirect('/')
+		
+class AddCategory(webapp.RequestHandler):
+	def post(self):
+		quiz = db.get(self.request.get('quiz'))
+		title = self.request.get('title')
+		parent_key = self.request.get('parent')
+	
+		if title.strip():
+			category = Category()
+			category.title = title
+			category.top_level = not parent_key
+			category.put()
+			
+			if parent_key:
+				parent = db.get(parent_key)
+				category_relationship = CategoryRelationship()
+				category_relationship.parent_category = parent
+				category_relationship.child_category = category
+				category_relationship.put()
+			
+		self.redirect('/categorize?quiz=%s' % (quiz.key(), ))
 	
 class AddComment(webapp.RequestHandler):
 	def post(self):
@@ -743,6 +782,8 @@ def main():
 		     ('/copyquestion', CopyQuestion),
 		     ('/movequestion', MoveQuestion),
 		     ('/rename', RenameQuiz),
+		     ('/categorize', Categorize),
+		     ('/addcategory', AddCategory),
 		     ('/toggle', ToggleCorrect),
 		     ('/comment', AddComment),
 		     ('/comments', CommentList),

@@ -6,6 +6,14 @@ from datetime import datetime
 
 EPOCH=datetime(1980,1,1)
 
+class Category(db.Model):
+        title = db.StringProperty()
+        top_level = db.BooleanProperty()
+        
+class CategoryRelationship(db.Model):
+        parent_category = db.ReferenceProperty(Category, collection_name="parents")
+        child_category = db.ReferenceProperty(Category, collection_name="children")
+
 class Quiz(db.Model):
 	title = db.StringProperty()
 	owner = db.UserProperty()
@@ -13,6 +21,7 @@ class Quiz(db.Model):
 	deleted = db.BooleanProperty()
 	taken_count = db.IntegerProperty()
 	question_count = db.IntegerProperty()
+        category = db.ReferenceProperty(Category, collection_name="quizzes")
 
 class Question(db.Model):
 	quiz = db.ReferenceProperty(Quiz, collection_name="questions")
@@ -22,7 +31,7 @@ class Question(db.Model):
 	comment_count = db.IntegerProperty()
 	image_url = db.StringProperty()
 	audio_url = db.StringProperty()
-        
+
         def moveto(self, quiz):
                 old_quiz = self.quiz
                 self.quiz = quiz
@@ -31,7 +40,7 @@ class Question(db.Model):
                 quiz.put()
                 old_quiz.question_count -= 1
                 old_quiz.put()
-	
+
 	def copyto(self, quiz):
 		question_copy = Question()
 		question_copy.quiz = quiz

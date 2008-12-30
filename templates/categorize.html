@@ -1,0 +1,70 @@
+<html>
+	<head>
+		{% include "../includes/head.html" %}
+	</head>
+	<body>
+		{% include "../includes/header.html" %}
+
+		<div>Select a category for quiz '<b>{{ quiz.title }}</b>'</div>
+
+                <ul>
+                {% for c1 in categories %}
+                    <form action="/categorize" method="post">
+                        <input type="hidden" name="quiz" value="{{ quiz.key }}" />
+                        <input type="hidden" name="category" value="{{ c1.key }}" />
+                        <li><input type="submit" value="{{ c1.title }}" />
+                    </form>
+<!--
+                    <form action="/addcategory" method="post">
+                        <input type="hidden" name="quiz" value="{{ quiz.key }}" />
+                        <input type="hidden" name="parent" value="{{ c1.key }}" />
+                        New sub-category:
+                        <input type="text" name="title" />
+                        <input type="submit" value="Add" />
+                    </form>
+                    <ul>
+                    {% for c2 in c1.children %}
+                        <form action="/categorize" method="post">
+                            <input type="hidden" name="quiz" value="{{ quiz.key }}" />
+                            <input type="hidden" name="category" value="{{ c2.key }}" />
+                            <li>
+                            <input type="submit" value="{{ c2.title }}" />
+                        </form>
+                        <form action="/addcategory" method="post">
+                            <input type="hidden" name="quiz" value="{{ quiz.key }}" />
+                            <input type="hidden" name="parent" value="{{ c2.key }}" />
+                            New sub-category:
+                            <input type="text" name="title" />
+                            <input type="submit" value="Add" />
+                        </form>
+                        
+                        <ul>
+                        {% for c3 in c2.children %}
+                            <form action="/categorize" method="post">
+                                <input type="hidden" name="quiz" value="{{ quiz.key }}" />
+                                <input type="hidden" name="category" value="{{ c3.key }}" />
+                                <li><input type="submit" value="{{ c3.title }}" />
+                            </form>
+                        {% endfor %}
+                        </ul>
+                        
+                    {% endfor %}
+                    </ul>
+-->
+                    
+                {% endfor %}
+                </ul>
+                    
+                <br>
+                <form action="/addcategory" method="post">
+                    <input type="hidden" name="quiz" value="{{ quiz.key }}" />
+                    New top-level category:
+                    <input type="text" name="title" />
+                    <input type="submit" value="Add" />
+                </form>
+        
+		<a href="/">Return to main page</a>
+	</body>
+</html>
+
+

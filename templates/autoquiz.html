@@ -17,20 +17,27 @@
                     <form name="autoquiz" action="/autoquiz" method="post">
                         <table>
                         <tr align="left">
-                        <th>Title</th>
+                        <th>Category</th>
+			<th>Title</th>
                         <th>Questions</th>
                         <th>Actions</th>
                         </tr>
                         {% for selector in selectors %}
-                            <tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
-                            <td><input type="checkbox" name="quiz" value="{{ selector.quiz.key }}"{% if selector.enabled %} checked{% endif %}>
-                                {{ selector.quiz.title }}</input></td>
-                            <td>{{ selector.quiz.question_count }}</td>
-                            <td>
-                                <a href="/questions?quiz={{ selector.quiz.key }}">Questions</a>
-                                <a href="/sessions?quiz={{ selector.quiz.key }}">History</a>
-                            </td>
-                            </tr>
+			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+				<td>{% if selector.quiz.category %}
+					{{ selector.quiz.category.title }}
+				{% else %}
+					<center>-</center>
+				{% endif %}
+				</td>
+				<td><input type="checkbox" name="quiz" value="{{ selector.quiz.key }}"{% if selector.enabled %} checked{% endif %}>
+				{{ selector.quiz.title }}</input></td>
+				<td>{{ selector.quiz.question_count }}</td>
+				<td>
+				<a href="/questions?quiz={{ selector.quiz.key }}">Questions</a>
+				<a href="/sessions?quiz={{ selector.quiz.key }}">History</a>
+				</td>
+			</tr>
                         {% endfor %}
                         </table>
                         
