@@ -63,3 +63,20 @@ th {
 .arrows {
 	font-size: small;
 }
+
+.navbar {
+	float:left;
+	padding:5px;
+	border-top:1px solid rgb(128,128,198);
+	width:140px;
+}
+
+.navitem {
+	padding-bottom:5px;
+}
+
+.content {
+	border-left:3px solid rgb(128,128,198);
+	margin-left:148px;
+	padding-left:10px;
+}

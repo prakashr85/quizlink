@@ -1,35 +1,35 @@
-<html>
-	<head>
-		{% include "../includes/head.html" %}
-	</head>
+	{% include "../includes/head.html" %}
 	<body onLoad="document.addform.questiontext.focus()">
 		{% include "../includes/header.html" %}
 
-		<form action="/addquestion" method="post" name="addform">
-			<input type="hidden" name="quiz" value="{{ quiz.key }}" />
-			
-			<td>
-				<div>Question Text:</div>
-				<div><textarea name="questiontext" cols="60" rows="4">{{ question.text }}</textarea></div>
-				<br>
-				<table>
-				<tr><td nowrap>Image link:</td><td><input type="text" name="image_url" size="50" value="{{ question.image_url|default_if_none:"" }}"/></td></tr>
-				<tr><td nowrap>Audio link:</td><td><input type="text" name="audio_url" size="50" value="{{ question.audio_url|default_if_none:"" }}"/></td></tr>
+		{% include "../includes/navbar.html" %}
+		
+		<div class="content">
+			<form action="/addquestion" method="post" name="addform">
+				<input type="hidden" name="quiz" value="{{ quiz.key }}" />
+				
+				<td>
+					<div>Question Text:</div>
+					<div><textarea name="questiontext" cols="60" rows="4">{{ question.text }}</textarea></div>
+					<br>
+					<table>
+					<tr><td nowrap>Image link:</td><td><input type="text" name="image_url" size="50" value="{{ question.image_url|default_if_none:"" }}"/></td></tr>
+					<tr><td nowrap>Audio link:</td><td><input type="text" name="audio_url" size="50" value="{{ question.audio_url|default_if_none:"" }}"/></td></tr>
+					</table>
+				</td>
+				<td/>
+				</tr>
 				</table>
-			</td>
-			<td/>
-			</tr>
-			</table>
-
-			<br>
-			<div>Question Type:</div>			
-			<div><input type="radio" name="questiontype" value="FIB" checked>Fill In The Blank</input></div>
-			<div><input type="radio" name="questiontype" value="MCSR">Multiple Choice Single Response</input></div>
-			<div><input type="radio" name="questiontype" value="MCMR">Multiple Choice Multiple Responses</input></div>
-		
-			<br>
-			<div><input type="submit" value="Add Choices"></div>
-		</form>
-		
+	
+				<br>
+				<div>Question Type:</div>			
+				<div><input type="radio" name="questiontype" value="FIB" checked>Fill In The Blank</input></div>
+				<div><input type="radio" name="questiontype" value="MCSR">Multiple Choice Single Response</input></div>
+				<div><input type="radio" name="questiontype" value="MCMR">Multiple Choice Multiple Responses</input></div>
+			
+				<br>
+				<div><input type="submit" value="Add Choices"></div>
+			</form>
+		</div>	
 	</body>
 </html>

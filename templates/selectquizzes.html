@@ -1,42 +1,41 @@
-<html>
-	<head>
-		{% include "../includes/head.html" %}
-	</head>
+	{% include "../includes/head.html" %}
 	<body>
 		{% include "../includes/header.html" %}
 
-		<div>Question to {{ operation }}:</div>
-		<div class="question">{{ question.text }}</div>
-		<br>
-
-		{% if quizzes %}
-			<form action="/{{ operation }}question" method="post" name="addform">
-				<div>Select a quiz to {{ operation }} to
-				<table>
-				<tr>
-					<th>Title</th>
-					<th>Visibility</th>
-				</tr>
+		{% include "../includes/navbar.html" %}
+		
+		<div class="content">
+			<div>Question to {{ operation }}:</div>
+			<div class="question">{{ question.text }}</div>
+			<br>
 	
-				{% for quiz in quizzes %}
-					<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
-					<td><input type="radio" name="quiz" value="{{ quiz.key }}"> {{ quiz.title|escape }}</input></td>
-					<td>{{ quiz.public|yesno:"Public,Private" }}</td>
+			{% if quizzes %}
+				<form action="/{{ operation }}question" method="post" name="addform">
+					<div>Select a quiz to {{ operation }} to
+					<table>
+					<tr>
+						<th>Title</th>
+						<th>Visibility</th>
 					</tr>
-				{% endfor %}
-				
-				</table>
-				
-				<br>
-				<input type="hidden" name="question" value="{{ question.key }}">
-				<div><input type="submit" value="{{ operation|capfirst }} to quiz"></div>
-			</form>
-		{% else %}
-			<div>There is no available quiz to {{ operation }} this question to</div>
-		{% endif %}
-
-		<br>
-		<div><a href="/publiclist">Go to the public list</a></div>
-		<div><a href="/">Return to main page</a></div>
+		
+					{% for quiz in quizzes %}
+						<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+						<td><input type="radio" name="quiz" value="{{ quiz.key }}"> {{ quiz.title|escape }}</input></td>
+						<td>{{ quiz.public|yesno:"Public,Private" }}</td>
+						</tr>
+					{% endfor %}
+					
+					</table>
+					
+					<br>
+					<input type="hidden" name="question" value="{{ question.key }}">
+					<div><input type="submit" value="{{ operation|capfirst }} to quiz"></div>
+				</form>
+			{% else %}
+				<div>There is no available quiz to {{ operation }} this question to</div>
+			{% endif %}
+	
+			<br>
+		</div>
 	</body>
 </html>

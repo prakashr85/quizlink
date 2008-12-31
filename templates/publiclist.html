@@ -1,42 +1,42 @@
-<html>
-	<head>
-		{% include "../includes/head.html" %}
-	</head>
+	{% include "../includes/head.html" %}
 	<body>
 		{% include "../includes/header.html" %}
-		<div><b>Public Quizzes</b></div>
-		<div>This is the public list. These quizzes have been created and published by other quizlink users.</div>
-		<br>
 		
-		<table>
-		<tr align="left">
-		<th>Category</th>
-		<th>Title</th>
-		<th>Questions</th>
-		<th>Taken</th>
-		<th nowrap>Actions</th>
-		</tr>
-		{% for quiz in quizzes %}
-			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
-			<td>{% if quiz.category %}
-				{{ quiz.category.title }}
-			    {% else %}
-				<center>-</center>
-			    {% endif %}
-			</td>
-			<td>{{ quiz.title|escape }}</td>
-			<td>{{ quiz.question_count }}</td>
-			<td>{{ quiz.taken_count }} time{% ifnotequal quiz.taken_count 1 %}s{% endifnotequal %}</td>
-			<td>
-				<a href="take?quiz={{ quiz.key }}">Take</a>
-				<a href="subscribe?quiz={{ quiz.key }}">Subscribe</a>
-				<a href="questions?quiz={{ quiz.key }}">Questions</a>
-			</td>
+		{% include "../includes/navbar.html" %}
+		
+		<div class="content">
+			<div><b>Public Quizzes</b></div>
+			<div>This is the public list. These quizzes have been created and published by other quizlink users.</div>
+			<br>
+			
+			<table>
+			<tr align="left">
+			<th>Category</th>
+			<th>Title</th>
+			<th>Questions</th>
+			<th>Taken</th>
+			<th nowrap>Actions</th>
 			</tr>
-		{% endfor %}
-		</table>
-		<br>
-
-		<a href="/">Return to main page</a>
+			{% for quiz in quizzes %}
+				<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+				<td>{% if quiz.category %}
+					{{ quiz.category.title }}
+				    {% else %}
+					<center>-</center>
+				    {% endif %}
+				</td>
+				<td>{{ quiz.title|escape }}</td>
+				<td>{{ quiz.question_count }}</td>
+				<td>{{ quiz.taken_count }} time{% ifnotequal quiz.taken_count 1 %}s{% endifnotequal %}</td>
+				<td>
+					<a href="take?quiz={{ quiz.key }}">Take</a>
+					<a href="subscribe?quiz={{ quiz.key }}">Subscribe</a>
+					<a href="questions?quiz={{ quiz.key }}">Questions</a>
+				</td>
+				</tr>
+			{% endfor %}
+			</table>
+			<br>
+		</div>
 	</body>
 </html>

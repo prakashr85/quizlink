@@ -1,45 +1,45 @@
-<html>
-	<head>
-		{% include "../includes/head.html" %}
-	</head>
+	{% include "../includes/head.html" %}
 	<body>
 		{% include "../includes/header.html" %}
+
+		{% include "../includes/navbar.html" %}
 		
-		<div>{% if session.quiz %}Quiz: <b>{{ session.quiz.title }}</b>{% endif %}</div>
-		<div>Taken on {{ session.timestarted|date:"Y-m-d H:i:s T" }}</div>
-		<br>
-		
-		<div><b>Responses {{ first|add:1 }}-{{ last }}</b>
-		{% if not atfirst %}<a href="/responses?session={{ session.key }}&first={{ previous }}"><span class="arrows"><</span>Previous {{ count }}</a>{% endif %}
-		{% if not atlast %}<a href="/responses?session={{ session.key }}&first={{ first|add:count }}">Next {{ count }}<span class="arrows">></span></a>{% endif %}
-		</div>
-		<table>
-		<tr align="left">
-			<th>Number</th>
-			{% if not session.quiz %}<th>Quiz</th>{% endif %}
-			<th>Question</th>
-			<th>Response</th>
-			<th>Correct?</th>
-		</tr>
-		
-		{% for response in responses %}
-			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
-			<td>{{ response.number }}</td>
-			{% if not session.quiz %}<td>{{ response.question.quiz.title }}</td>{% endif %}
-			<td>{{ response.question.text|striptags }}</td>
-			<td {% if response.answered and not response.correct %}class="incorrect"{% endif %}>{{ response.text|escape }}</td>
-			<td {% if response.answered and not response.correct %}class="incorrect"{% endif %}>{{ response.correct|yesno:"Yes,No," }}</td>
+		<div class="content">
+			<div>{% if session.quiz %}Quiz: <b>{{ session.quiz.title }}</b>{% endif %}</div>
+			<div>Taken on {{ session.timestarted|date:"Y-m-d H:i:s T" }}</div>
+			<br>
+			
+			<div><b>Responses {{ first|add:1 }}-{{ last }}</b>
+			{% if not atfirst %}<a href="/responses?session={{ session.key }}&first={{ previous }}"><span class="arrows"><</span>Previous {{ count }}</a>{% endif %}
+			{% if not atlast %}<a href="/responses?session={{ session.key }}&first={{ first|add:count }}">Next {{ count }}<span class="arrows">></span></a>{% endif %}
+			</div>
+			<table>
+			<tr align="left">
+				<th>Number</th>
+				{% if not session.quiz %}<th>Quiz</th>{% endif %}
+				<th>Question</th>
+				<th>Response</th>
+				<th>Correct?</th>
 			</tr>
-		{% endfor %}
-		<tr><td colspan="5" align="right">
-		<div><b>Responses {{ first|add:1 }}-{{ last }}</b>
-		{% if not atfirst %}<a href="/responses?session={{ session.key }}&first={{ previous }}"><span class="arrows"><</span>Previous {{ count }}</a>{% endif %}
-		{% if not atlast %}<a href="/responses?session={{ session.key }}&first={{ first|add:count }}">Next {{ count }}<span class="arrows">></span></a>{% endif %}
+			
+			{% for response in responses %}
+				<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+				<td>{{ response.number }}</td>
+				{% if not session.quiz %}<td>{{ response.question.quiz.title }}</td>{% endif %}
+				<td>{{ response.question.text|striptags }}</td>
+				<td {% if response.answered and not response.correct %}class="incorrect"{% endif %}>{{ response.text|escape }}</td>
+				<td {% if response.answered and not response.correct %}class="incorrect"{% endif %}>{{ response.correct|yesno:"Yes,No," }}</td>
+				</tr>
+			{% endfor %}
+			<tr><td colspan="5" align="right">
+			<div><b>Responses {{ first|add:1 }}-{{ last }}</b>
+			{% if not atfirst %}<a href="/responses?session={{ session.key }}&first={{ previous }}"><span class="arrows"><</span>Previous {{ count }}</a>{% endif %}
+			{% if not atlast %}<a href="/responses?session={{ session.key }}&first={{ first|add:count }}">Next {{ count }}<span class="arrows">></span></a>{% endif %}
+			</div>
+			</td></tr>
+			</table>
+			<br>
+			{% if session.quiz %}<div><a href="/sessions?quiz={{ session.quiz.key }}">Return to quiz history</a></div>{% endif %}
 		</div>
-		</td></tr>
-		</table>
-		<br>
-		{% if session.quiz %}<div><a href="/sessions?quiz={{ session.quiz.key }}">Return to quiz history</a></div>{% endif %}
-		<div><a href="/">Return to main page</a></div>
 	</body>
 </html>

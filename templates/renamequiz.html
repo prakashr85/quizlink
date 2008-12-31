@@ -1,20 +1,21 @@
-<html>
-	<head>
-		{% include "../includes/head.html" %}
-	</head>
+	{% include "../includes/head.html" %}
 	<body onLoad="document.rename.title.focus()">
 		{% include "../includes/header.html" %}
 
-		<div>Renaming quiz <b>{{ quiz.title }}</b></div>
-
-		<form action="/rename" method="post" name="rename">
-			<input type="hidden" name="quiz" value="{{ quiz.key }}" />
-			<div>New name: <input type="text" name="title" size="75"></div>
-			<div><input type="submit" value="Rename"></div>
-		</form>
+		{% include "../includes/navbar.html" %}
 		
-		<br>
-		<a href="/">Return to main page</a>
+		<div class="content">
+
+			<div>Renaming quiz <b>{{ quiz.title }}</b></div>
+	
+			<form action="/rename" method="post" name="rename">
+				<input type="hidden" name="quiz" value="{{ quiz.key }}" />
+				<div>New name: <input type="text" name="title" size="75"></div>
+				<div><input type="submit" value="Rename"></div>
+			</form>
+			
+			<br>
+		</div>
 	</body>
 </html>
 
