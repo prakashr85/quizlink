@@ -771,8 +771,32 @@ class AutoquizSetup(webapp.RequestHandler):
 	def get_selectors(self, user):
 		selectors = AutoquizQuestionSelector.gql('where user = :1', user).fetch(FETCH_SIZE)
 		return selectors
+	
+class SearchQuestions(webapp.RequestHandler):
+	def get(self):
+		query = self.request.get('query')
+		user = users.get_current_user()
+		
+		if len(query) > 3:
+			questions = Question.all().search(query).fetch(50)
+			
+			questions = [question for question in questions if question.quiz.public or question.quiz.owner == user]
+			
+			for question in questions:
+				question.isowner = question.quiz.owner == user
+		else:
+			questions = None
+			
+		template_values = {
+			'query':query,
+			'questions':questions
+		}
+		path = os.path.join(os.path.dirname(__file__), 'templates/search.html')
+		self.response.out.write(template.render(path, template_values))
 
 def main():
+	search._FULL_TEXT_MIN_LENGTH = 2
+	
 	application = webapp.WSGIApplication(
 		[('/', MainPage),
 		     ('/publiclist', PublicList), 
@@ -799,7 +823,8 @@ def main():
 		     ('/sessions', SessionList), 
 		     ('/responses', ResponseList),
 		     ('/delete', DeleteItem),
-		     ('/autoquiz', AutoquizSetup)
+		     ('/autoquiz', AutoquizSetup),
+		     ('/search', SearchQuestions)
 		     ], 
 		debug=True)
 	wsgiref.handlers.CGIHandler().run(application)

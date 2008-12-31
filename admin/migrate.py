@@ -10,8 +10,31 @@ class DoMigration(webapp.RequestHandler):
     def get(self):
         #self.add_selectors(Quiz)
         #self.remove_maxvalue(Session)
-        self.fix_questioncount()
+        #self.fix_questioncount()
+        self.update_all(Question)
         return
+    
+    def update_all(self, type):
+        objects = type.all().fetch(1000)
+        update_count = 0
+        for o in objects:
+            if not o.migrated:
+                o.migrated = True
+                o.put()
+                update_count += 1
+        self.response.out.write('Updated %d record(s) of type %s<br>' % (update_count, type.__name__))
+
+    def remove_maxvalue(self, type):
+        objects = type.all().fetch(1000)
+        self.response.out.write('Updating %s ...<br>' % (type.__name__,))
+        update_count = 0
+        for o in objects:
+            if o.autoquiz_value:
+                o.autoquiz_value = None
+                o.put()
+                update_count += 1
+        self.response.out.write('Updated %d record(s) of type %s<br>' % (update_count, type.__name__))
+    
    
     def add_selectors(self, type):
         objects = type.all().fetch(1000)
