@@ -1,0 +1,57 @@
+	{% include "../includes/head.html" %}
+	<body>
+		{% include "../includes/header.html" %}
+		
+		{% include "../includes/navbar.html" %}
+		
+		<div class="content">
+		
+			<div>Search results for query '<b>{{ query }}</b>'</div>
+                        <br>
+                
+			{% if questions %}
+                            <table>
+                            <tr align="left">
+                            <th>Category</th>
+                            <th>Quiz</th>
+                            <th>Question</th>
+                            <th>Type</th>
+                            <th>Comments</th>
+                            <th>Actions</th>
+                            <th>Visibility</th>
+                            </tr>
+                            {% for question in questions %}
+                                    <tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+                                    <td>{{ question.quiz.category.title }}</td>
+                                    <td><a href="questions?quiz={{ question.quiz.key }}">{{ question.quiz.title }}</a></td>
+                                    <td>{{ question.text|striptags }}</td>
+                                    <td nowrap>
+                                            {% ifequal question.type "MCSR" %}Multiple Choice Single Response{% endifequal %}
+                                            {% ifequal question.type "MCMR" %}Multiple Choice Multiple Responses{% endifequal %}
+                                            {% ifequal question.type "FIB" %}Fill In The Blank{% endifequal %}
+                                    </td>
+                                    <td>{{ question.comment_count }}</td>
+                                    <td nowrap>
+                                            <a href="/comments?question={{ question.key }}">Comments</a>
+                                            <a href="/copyquestion?question={{ question.key }}">Copy</a>
+                                            <a href="/subscribe?quiz={{ question.quiz.key }}">Subscribe</a>
+                                            {% if question.isowner %}<a href="/editquestion?question={{ question.key }}">Edit</a>{% endif %}
+                                    </td>
+                                    <td>{% if question.quiz.public %} Public {% else %} Private {% endif %}</td>
+                                    </tr>
+                            {% endfor %}
+                            <tr><td colspan="5" align="right">
+                            </td>
+                            </tr>
+                            </table>
+                        {% else %}
+                            <i>No results found</i>
+                        {% endif %}
+			
+			{% if isowner %}
+			<div>
+				<br><a href="/addquestion?quiz={{ quiz.key }}">Add question</a></div>{% endif %}
+			</div>
+		</div>
+	</body>
+</html>

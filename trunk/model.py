@@ -2,6 +2,7 @@
 # defines database model objects for quizlink
 
 from google.appengine.ext import db
+from google.appengine.ext import search
 from datetime import datetime
 
 EPOCH=datetime(1980,1,1)
@@ -23,14 +24,15 @@ class Quiz(db.Model):
 	question_count = db.IntegerProperty()
         category = db.ReferenceProperty(Category, collection_name="quizzes")
 
-class Question(db.Model):
+class Question(search.SearchableModel):
 	quiz = db.ReferenceProperty(Quiz, collection_name="questions")
 	type = db.StringProperty()
-	text = db.StringProperty(multiline=True)
+	text = db.TextProperty()
 	dateadded = db.DateTimeProperty(auto_now_add=True)
 	comment_count = db.IntegerProperty()
 	image_url = db.StringProperty()
 	audio_url = db.StringProperty()
+        migrated = db.BooleanProperty()
 
         def moveto(self, quiz):
                 old_quiz = self.quiz
