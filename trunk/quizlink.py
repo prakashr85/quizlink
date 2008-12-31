@@ -53,6 +53,11 @@ class MainPage(webapp.RequestHandler):
 		self.response.out.write(template.render(path, template_values))
 
 class AddQuiz(webapp.RequestHandler):
+	def get(self):
+		template_values = {}
+		path = os.path.join(os.path.dirname(__file__), 'templates/addquiz.html')
+		self.response.out.write(template.render(path, template_values))
+	
 	def post(self):
 		quiz = Quiz()
 		quiz.title = self.request.get('title').strip()

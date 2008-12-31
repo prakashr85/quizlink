@@ -1,7 +1,4 @@
-<html>
-	<head>
-		{% include "../includes/head.html" %}
-	</head>
+	{% include "../includes/head.html" %}
 	<body onLoad="document.getElementById('nextbutton').focus();">
 		<div><b>{{ response.question.quiz.title }}</b></div>
 		<div>Question {{ response.number }}</div>
@@ -16,17 +13,18 @@
 		{% else %}
 			<span class="incorrect-text">Incorrect!</span>
 			<br><br>
-			Acceptable responses(s):
-			<ul>
-			{% if none_of_the_above %}
-				<li><div><i>None of the above</i></div></li>
-			{% else %}
-				{% for choice in response.question.choices %}
-					{% if choice.correct %}<li><div>{{ choice.text|escape }}</div>{% endif %}
-				{% endfor %}
-			{% endif %}
-			</ul>
 		{% endif %}
+
+		Acceptable responses(s):
+		<ul>
+		{% if none_of_the_above %}
+			<li><div><i>None of the above</i></div></li>
+		{% else %}
+			{% for choice in response.question.choices %}
+				{% if choice.correct %}<li><div>{{ choice.text|escape }}</div>{% endif %}
+			{% endfor %}
+		{% endif %}
+		</ul>
 		</div>
 
 		<div>

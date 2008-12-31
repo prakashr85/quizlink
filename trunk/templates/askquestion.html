@@ -1,7 +1,6 @@
-<html>
+	{% include "../includes/head.html" %}
 	<head>
-		{% include "../includes/head.html" %}
-		<script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>
+		<script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>		
 	</head>
 	<body onLoad="document.getElementById('response_text').focus(); document.getElementById('nextbutton').focus();">
 		<div><b>{{ response.question.quiz.title }}</b></div>

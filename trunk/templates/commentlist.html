@@ -1,52 +1,54 @@
-<html>
-	<head>
-		{% include "../includes/head.html" %}
-	</head>
+        {% include "../includes/head.html" %}
 	<body onLoad="document.commentform.comment_text.focus()">
 		{% include "../includes/header.html" %}
-		
-		<div>Comments on question:</div>
-                {% include "../includes/question.html" %}
-		<br>
-		
-		{% if comments %}
-			<table>
-			<tr align="left">
-			<th>Date</th>
-			<th>Comment</th>
-                        {% if isowner %}<th>Actions</th>{% endif %}
-			</tr>
-			{% for comment in comments %}
-				<tr
-                                    {% if comment.byowner %}
-                                        class="commentbyowner"
-                                    {% else %}
-                                        {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}
-                                    {% endif %}
-                                >
-				<td>{{ comment.dateadded|date:"Y-m-d H:i:s T" }}</td>
-				<td>{{ comment.text|escape }}</td>
-                                {% if isowner %}<td><a href="/delete?comment={{ comment.key }}">Delete</a></td>{% endif %}
-				</tr>
-			{% endfor %}
-			</table>
-		{% else %}
-			<div>There are no comments on this question</div>
-		{% endif %}
 
-                {% if isowner %}
-                    <br>
-                    <div>Post a comment:</div>
-                    <form name="commentform" action="/comment" method="post">
-                            <input type="hidden" name="question" value="{{ question.key }}" />
-                            <div><textarea name="comment_text" cols="50" rows="4"></textarea></div>
-                            <input type="submit" value="Add Comment" />
-                    </form>
-                {% endif %}
+		{% include "../includes/navbar.html" %}
+		
+		<div class="content">
+		
+                        <div>Comments on question:</div>
+                        {% include "../includes/question.html" %}
+                        <br>
+                        
+                        {% if comments %}
+                                <table>
+                                <tr align="left">
+                                <th>Date</th>
+                                <th>Comment</th>
+                                {% if isowner %}<th>Actions</th>{% endif %}
+                                </tr>
+                                {% for comment in comments %}
+                                        <tr
+                                            {% if comment.byowner %}
+                                                class="commentbyowner"
+                                            {% else %}
+                                                {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}
+                                            {% endif %}
+                                        >
+                                        <td>{{ comment.dateadded|date:"Y-m-d H:i:s T" }}</td>
+                                        <td>{{ comment.text|escape }}</td>
+                                        {% if isowner %}<td><a href="/delete?comment={{ comment.key }}">Delete</a></td>{% endif %}
+                                        </tr>
+                                {% endfor %}
+                                </table>
+                        {% else %}
+                                <div>There are no comments on this question</div>
+                        {% endif %}
         
-		<br>
-                <div><a href="/editquestion?question={{ question.key }}">Edit this question</a></div>
-		<div><a href="/questions?quiz={{ question.quiz.key }}">View questions for this quiz</a></div>
-		<div><a href="/">Return to main page</a></div>
+                        {% if isowner %}
+                            <br>
+                            <div>Post a comment:</div>
+                            <form name="commentform" action="/comment" method="post">
+                                    <input type="hidden" name="question" value="{{ question.key }}" />
+                                    <div><textarea name="comment_text" cols="50" rows="4"></textarea></div>
+                                    <input type="submit" value="Add Comment" />
+                            </form>
+                        {% endif %}
+                
+                        <br>
+                        <div><a href="/editquestion?question={{ question.key }}">Edit this question</a></div>
+                        <div><a href="/questions?quiz={{ question.quiz.key }}">View questions for this quiz</a></div>
+                        <div><a href="/">Return to main page</a></div>
+                </div>
 	</body>
 </html>

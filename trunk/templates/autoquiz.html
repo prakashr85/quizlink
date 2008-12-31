@@ -1,100 +1,99 @@
-<html>
-	<head>
-		{% include "../includes/head.html" %}
-	</head>
+        {% include "../includes/head.html" %}
 	<body onload="document.autoquiz.question_count.selectedIndex = 4;">
-		{% include "../includes/header.html" %}
+        {% include "../includes/header.html" %}
+        <div>
+		{% include "../includes/navbar.html" %}
 		
-		<div><b>Auto Quiz Setup</b></div>
-                <div>The Auto Quiz will pull questions from several quizzes and ask them to you
-                in an order based on how long it has been since you were asked the question and
-                how many times you have answered the question incorrectly.</div>
-                
-		<br>
-                <div>Select the quizzes that the Auto Quiz will pull questions from</div>
-		
-		{% if selectors %}
-                    <form name="autoquiz" action="/autoquiz" method="post">
-                        <table>
-                        <tr align="left">
-                        <th>Category</th>
-			<th>Title</th>
-                        <th>Questions</th>
-                        <th>Actions</th>
-                        </tr>
-                        {% for selector in selectors %}
-			<tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
-				<td>{% if selector.quiz.category %}
-					{{ selector.quiz.category.title }}
-				{% else %}
-					<center>-</center>
-				{% endif %}
-				</td>
-				<td><input type="checkbox" name="quiz" value="{{ selector.quiz.key }}"{% if selector.enabled %} checked{% endif %}>
-				{{ selector.quiz.title }}</input></td>
-				<td>{{ selector.quiz.question_count }}</td>
-				<td>
-				<a href="/questions?quiz={{ selector.quiz.key }}">Questions</a>
-				<a href="/sessions?quiz={{ selector.quiz.key }}">History</a>
-				</td>
-			</tr>
-                        {% endfor %}
-                        </table>
+		<div class="content">
+                        <div><b>Auto Quiz</b></div>
+                        <div>The Auto Quiz will pull questions from several quizzes and ask them to you
+                        in an order based on how long it has been since you were asked the question and
+                        how many times you have answered the question incorrectly.</div>
                         
                         <br>
-                        <div>Number of questions:</div>
-                        <div>
-                        <select name="question_count">
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                            <option value="50">50</option>
-                            <option value="75">75</option>
-                            <option value="100">100</option>
-                            <option value="150">150</option>
-                            <option value="200">200</option>
-                        </select>
-                        </div>
+                        <div>Select the quizzes that the Auto Quiz will pull questions from</div>
                         
-                        <br>
-                        <input type="submit" value="Start Auto Quiz" />
-                    </form>
-		{% else %}
-                    <div>You do not have any quizzes</div>
-		{% endif %}
-                
-                {% if sessions %}
-                    <br>
-                    <div><b>Auto Quiz History</b></div>
-                    <table>
-                    <tr align="left">
-                            <th>Started</th>
-                            <th>Completed</th>
-                            <th>Answered</th>
-                            <th>Correct</th>
-                            <th>Percentage</th>
-                            <th>Actions</th>
-                    </tr>
-                    
-                    {% for session in sessions %}
-                            <tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
-                            <td>{{ session.timestarted|date:"Y-m-d H:i:s T" }}</td>
-                            <td>{% if session.timecompleted %}{{ session.timecompleted|date:"Y-m-d H:i:s T" }}{% endif %}</td>
-                            <td>{{ session.questions_answered }}</td>
-                            <td>{{ session.number_correct }}</td>
-                            <td>{{ session.percentage_correct|default_if_none:0|floatformat }}%</td>
-                            <td>
-                                    <a href="/responses?session={{ session.key }}">Responses</a>
-                                    <a href="/resume?session={{ session.key }}">Resume</a>
-                                    <a href="/delete?session={{ session.key }}">Delete</a>
-                            </td>
+                        {% if selectors %}
+                            <form name="autoquiz" action="/autoquiz" method="post">
+                                <table>
+                                <tr align="left">
+                                <th>Category</th>
+                                <th>Title</th>
+                                <th>Questions</th>
+                                <th>Actions</th>
+                                </tr>
+                                {% for selector in selectors %}
+                                <tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+                                        <td>{% if selector.quiz.category %}
+                                                {{ selector.quiz.category.title }}
+                                        {% else %}
+                                                <center>-</center>
+                                        {% endif %}
+                                        </td>
+                                        <td><input type="checkbox" name="quiz" value="{{ selector.quiz.key }}"{% if selector.enabled %} checked{% endif %}>
+                                        {{ selector.quiz.title }}</input></td>
+                                        <td>{{ selector.quiz.question_count }}</td>
+                                        <td>
+                                        <a href="/questions?quiz={{ selector.quiz.key }}">Questions</a>
+                                        <a href="/sessions?quiz={{ selector.quiz.key }}">History</a>
+                                        </td>
+                                </tr>
+                                {% endfor %}
+                                </table>
+                                
+                                <br>
+                                <div>Number of questions:</div>
+                                <div>
+                                <select name="question_count">
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="75">75</option>
+                                    <option value="100">100</option>
+                                    <option value="150">150</option>
+                                    <option value="200">200</option>
+                                </select>
+                                </div>
+                                
+                                <br>
+                                <input type="submit" value="Start Auto Quiz" />
+                            </form>
+                        {% else %}
+                            <div>You do not have any quizzes</div>
+                        {% endif %}
+                        
+                        {% if sessions %}
+                            <br>
+                            <div><b>Auto Quiz History</b></div>
+                            <table>
+                            <tr align="left">
+                                    <th>Started</th>
+                                    <th>Completed</th>
+                                    <th>Answered</th>
+                                    <th>Correct</th>
+                                    <th>Percentage</th>
+                                    <th>Actions</th>
                             </tr>
-                    {% endfor %}
-                    </table>                    
-                {% endif %}
-
-		<br>
-		<div><a href="/">Return to main page</a></div>
+                            
+                            {% for session in sessions %}
+                                    <tr {% if forloop.counter|divisibleby:2 %}class="evenrow"{% endif %}>
+                                    <td>{{ session.timestarted|date:"Y-m-d H:i:s T" }}</td>
+                                    <td>{% if session.timecompleted %}{{ session.timecompleted|date:"Y-m-d H:i:s T" }}{% endif %}</td>
+                                    <td>{{ session.questions_answered }}</td>
+                                    <td>{{ session.number_correct }}</td>
+                                    <td>{{ session.percentage_correct|default_if_none:0|floatformat }}%</td>
+                                    <td>
+                                            <a href="/responses?session={{ session.key }}">Responses</a>
+                                            <a href="/resume?session={{ session.key }}">Resume</a>
+                                            <a href="/delete?session={{ session.key }}">Delete</a>
+                                    </td>
+                                    </tr>
+                            {% endfor %}
+                            </table>                    
+                        {% endif %}
+                </div>
+        <div>
 	</body>
 </html>

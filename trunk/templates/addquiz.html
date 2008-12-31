@@ -1,0 +1,26 @@
+    {% include "../includes/head.html" %}
+    <body onLoad="document.rename.title.focus()">
+            {% include "../includes/header.html" %}
+
+            {% include "../includes/navbar.html" %}
+            
+            <div class="content">
+
+                <form action="/addquiz" method="post">
+                        <div><b>Create New Quiz</b></div>
+                        <br>
+                            
+                        <div>Title: <br>
+                        <input type="text" name="title" size="75"></div>
+                        <br>
+                            
+                        <div><input type="submit" value="Create"></div>
+                </form>
+                
+            </div>
+    </body>
+</html>
+
+
+
+
