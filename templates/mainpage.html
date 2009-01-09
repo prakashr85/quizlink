@@ -12,6 +12,7 @@
 				<th>Category</th>
 				<th>Title</th>
 				<th>Questions</th>
+				<th>Taken</th>
 				<th>Actions</th>
 				<th>Visibility</th>
 				</tr>
@@ -25,6 +26,7 @@
 					</td>
 					<td>{{ quiz.title|escape }}</td>
 					<td>{{ quiz.question_count }}</td>
+					<td>{{ quiz.taken_count }} time{% ifnotequal quiz.taken_count 1 %}s{% endifnotequal %}</td>
 					<td nowrap>
 						<a href="take?quiz={{ quiz.key }}">Take</a>
 						<a href="questions?quiz={{ quiz.key }}">Questions</a>
