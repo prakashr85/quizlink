@@ -47,14 +47,14 @@ indexes:
   - name: dateadded
     direction: desc
 
-# Used 177 times in query history.
+# Used 185 times in query history.
 - kind: Comment
   properties:
   - name: quizowner
   - name: dateadded
     direction: desc
 
-# Used 283 times in query history.
+# Used 285 times in query history.
 - kind: Question
   properties:
   - name: quiz
@@ -74,7 +74,7 @@ indexes:
   - name: owner
   - name: quiz
 
-# Used 194 times in query history.
+# Used 202 times in query history.
 - kind: Quiz
   properties:
   - name: deleted
@@ -82,7 +82,7 @@ indexes:
   - name: taken_count
     direction: desc
 
-# Used 52 times in query history.
+# Used 53 times in query history.
 - kind: Quiz
   properties:
   - name: deleted

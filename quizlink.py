@@ -40,7 +40,7 @@ class MainPage(webapp.RequestHandler):
 		user = users.get_current_user()
 		provider = QuizProvider()
 		latest_comments = Comment.gql('where quizowner = :1 order by dateadded desc', user).fetch(COMMENT_COUNT)
-		
+				
 		template_values = { 
 			'user':user, 
 			'isadmin':users.is_current_user_admin(),
@@ -777,7 +777,7 @@ class SearchQuestions(webapp.RequestHandler):
 		query = self.request.get('query')
 		user = users.get_current_user()
 		
-		if len(query) > 3:
+		if len(query) > 2:
 			questions = Question.all().search(query).fetch(50)
 			
 			questions = [question for question in questions if question.quiz.public or question.quiz.owner == user]
